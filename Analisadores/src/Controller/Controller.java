@@ -45,32 +45,26 @@ public class Controller {
         }
         
         //Lendo todos os arquivos
+        System.out.println("Analise Lexica");
         for (String[] a : arqs){
             FileReader arq = new FileReader(a[0]);
             lexica.analisar(arq);
             ArrayList<Token> tokens = lexica.getTokens();
-            //Escrevendo no arquivo
-            FileWriter escrita = new FileWriter("./teste/"+a[1]+".saida");
-            PrintWriter gravar = new PrintWriter(escrita);
-            for(Token token : tokens){
-                gravar.println(token.toString());
-            }
             if (!lexica.getErro()){
-                gravar.println("");
-                gravar.println("");
-                gravar.println("CODIGO FONTE SEM ERRO LEXICO");
+                System.out.println("Arquivo: " + a[1] + ".txt foi analisado lexicamente");
             }else{
+                FileWriter escrita = new FileWriter("./teste/"+a[1]+".saida");
+                PrintWriter gravar = new PrintWriter(escrita);
                 tokens = lexica.getTokensInvalidos();
-                gravar.println("");
-                gravar.println("");
                 gravar.println("ERROS LEXICOS");
                 for(Token token : tokens){
-                gravar.println(token.toString());
+                    gravar.println(token.toString());
                 }
+                System.out.println("Arquivo: " + a[1] + ".txt contem erro lexico");
+                gravar.close();
+                escrita.close();
             }
-            gravar.close();
-            escrita.close();
-            System.out.println("Arquivo: " + a[1] + ".txt foi analisado");
+            
             arq.close();
         }
         

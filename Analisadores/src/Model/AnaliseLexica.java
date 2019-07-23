@@ -467,6 +467,8 @@ public class AnaliseLexica {
         token = token.trim();
         Token t = automatos.verificarToken(token, linha);
         tokenAnterior = t.getTipo();
+        if (t.getTipo() == Constants.COMENTARIOB || t.getTipo() == Constants.COMENTARIOL)
+            return "";
         tokens.add(t);
         return "";
     }

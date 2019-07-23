@@ -3,12 +3,8 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Havallon/Dropbox/MI%20COMPILADORES/PBL1/AnalisadorLexico/src/Model/AnaliseLexica.java</file>
-            <file>file:/C:/Users/Havallon/Dropbox/MI%20COMPILADORES/PBL1/AnalisadorLexico/src/View/Main.java</file>
-            <file>file:/C:/Users/Havallon/Dropbox/MI%20COMPILADORES/PBL1/AnalisadorLexico/src/Controller/Controller.java</file>
-            <file>file:/C:/Users/Havallon/Dropbox/MI%20COMPILADORES/PBL1/AnalisadorLexico/src/Model/Token.java</file>
-            <file>file:/C:/Users/Havallon/Dropbox/MI%20COMPILADORES/PBL1/AnalisadorLexico/src/Model/Automatos.java</file>
-            <file>file:/C:/Users/Havallon/Dropbox/MI%20COMPILADORES/PBL1/AnalisadorLexico/src/Model/util/Constants.java</file>
+            <file>file:/C:/Users/Havallon/Documents/compiladores/Analisadores/src/Controller/Controller.java</file>
+            <file>file:/C:/Users/Havallon/Documents/compiladores/Analisadores/src/View/Main.java</file>
         </group>
     </open-files>
 </project-private>

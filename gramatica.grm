@@ -78,10 +78,10 @@ OperadoresLogicos = ('&&' | '||')
 <blocoConstantes>::= 'constantes''{'<estrutura_constante>'}' |<>
 <estrutura_constante> ::= Tipo<constantes>';'<estrutura_constante>
                        |<>
+
 <constantes> ::= Identificadores'='<constante><multiplasConstantes>
-              | Identificadores'='<constante>
               
-<multiplasConstantes> ::= ','<constantes> 
+<multiplasConstantes> ::= ','<constantes> | <>
 
 <constante> ::= Identificadores   
          | CadeiaCaracteres
@@ -97,26 +97,20 @@ OperadoresLogicos = ('&&' | '||')
                 | <expressao> 
                 | <booleano>
 
-<incremento> ::= '('Incrementador Identificadores<Vetor> ')' 
-              | '('Identificadores<Vetor>  Incrementador')' 
-              | Incrementador Identificadores<Vetor>  
-              | Identificadores<Vetor>  Incrementador
 
-<booleano> ::= '('TipoBooleano')' 
-            | '(''!' TipoBooleano')' 
-            | '(''!' Identificadores<Vetor> ')'
-            | TipoBooleano 
-            | '!' TipoBooleano 
-            | '!' Identificadores<Vetor> 
+<incremento> ::= '('<termoIncremento>')' | <termoIncremento>
+<termoIncremento> ::= Incrementador Identificadores<Vetor> | Identificadores<Vetor>  Incrementador
 
-<expressao> ::= '('<expressao>')' 
-             | '('<expressao>')' OperadoresAritmeticos <expressao>
-             | <operador> <maisOperacoes>
+
+<booleano> ::= '('<termoBooleano>')' | TipoBooleano | '!' <termoBooleano2>
+<termoBooleano> ::= TipoBoleano | '!' <termoBooleano2>
+<termoBooleano2> ::= TipoBooleano | Identificadores<Vetor> 
        
-             
-<maisOperacoes> ::= OperadoresAritmeticos <maisOperacoes>
-                 | OperadoresAritmeticos  <expressao>
-                 | <>
+<expressao> ::= '('<expressao>')' <termoExp> | <operador> <maisOperacoes>
+<termoExp> ::= OperadoresAritmeticos <expressao> | <>
+                      
+<maisOperacoes> ::= OperadoresAritmeticos <termoMaisOp> | <>
+<termoMaisOp> ::= <maisOperacoes> | <expressao>
                  
 <operador> ::=  Numeros
                 | CadeiaCaracteres
