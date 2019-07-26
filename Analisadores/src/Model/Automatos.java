@@ -18,6 +18,7 @@ public class Automatos {
     private final String numero;
     private final String cadeia; //Cadeia de caracters;
     private final String tipo;
+    private final String tipoBoleano;
     
     //Expressoes Regulares de cada automato.
     public Automatos() {
@@ -39,6 +40,7 @@ public class Automatos {
         this.numero = "\\d\\d*(\\.\\d(\\d)*)?";
         this.cadeia = "\"(.)*";
         this.tipo = "inteiro|real|boleano|texto|vazio";
+        this.tipoBoleano = "verdadeiro|falso";
     }
 
     //Método para veriicar a vericidade do token
@@ -70,6 +72,10 @@ public class Automatos {
     
     public boolean isTipo(String lexema){
         return lexema.matches(tipo);
+    }
+    
+    public boolean isTipoBoleano(String lexema){
+        return lexema.matches(tipoBoleano);
     }
     
     public String getOperadorR() {

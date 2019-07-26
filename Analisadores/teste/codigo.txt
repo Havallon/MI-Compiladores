@@ -1,0 +1,9 @@
+programa{
+
+constantes{
+    real salarioInicial = 300;
+    inteiro numMaxFun = 10;
+}
+
+
+}

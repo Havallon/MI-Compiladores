@@ -46,16 +46,13 @@ public class AnaliseSintatica {
                     atual = proximoToken();
                 }
                 else{
-                   erros.add(new Token(Constants.ERRO_SINT,"Faltando o delimitador '}' para finializar o bloco do programa" , atual.getLinha()));
-                   atual = proximoToken();
+                   erro("Faltando o delimitador '}' para finializar o bloco do programa");
                 }
             }else{
-                erros.add(new Token(Constants.ERRO_SINT,"Faltando o delimitador '{' para inicar o bloco do programa" , atual.getLinha()));
-                atual = proximoToken();
+                erro("Faltando o delimitador '{' para inicar o bloco do programa");
             }
         } else {
-            erros.add(new Token(Constants.ERRO_SINT,"programa não inicializado" , atual.getLinha()));
-            atual = proximoToken();
+            erro("programa não inicializado");
         }
     }
     
@@ -68,12 +65,10 @@ public class AnaliseSintatica {
                if (atual.getLexema().equals("}")){
                    atual = proximoToken();
                }else{
-                   erros.add(new Token(Constants.ERRO_SINT,"Faltando o delimitador '}' para finalizar o bloco de constantes" , atual.getLinha()));
-                   atual = proximoToken();
+                   erro("Faltando o delimitador '}' para finalizar o bloco de constantes");
                }
             }else{
-                erros.add(new Token(Constants.ERRO_SINT,"Faltando o delimitador '{' para inciar o bloco de constantes" , atual.getLinha()));
-                atual = proximoToken();
+                erro("Faltando o delimitador '{' para inciar o bloco de constantes");
             }
         }
     }
@@ -82,15 +77,48 @@ public class AnaliseSintatica {
         if (automatos.isTipo(atual.getLexema())){
             atual = proximoToken();
             constantes();
+            if (atual.getLexema().equals(";")){
+                atual = proximoToken();
+                estruturaConstante();
+            } else {
+                erro("Faltando ';' para finalizar a constante declarada");
+            }
         } else {
             if (atual.getTipo() != Constants.DELIMITADOR){
-                erros.add(new Token(Constants.ERRO_SINT,"Faltando a tipagem da constante" , atual.getLinha()));
-                atual = proximoToken();
+                erro("Faltando a tipagem da constante");
             }
         }
     } 
     
     private void constantes(){
+        if (atual.getTipo() == Constants.IDENTIFICADOR){
+            atual = proximoToken();
+            if (atual.getLexema().equals("=")){
+                atual = proximoToken();
+                if (atual.getTipo() == Constants.NUMERO || atual.getTipo() == Constants.CADEIA_CARACTERES || automatos.isTipoBoleano(atual.getLexema())){
+                    atual = proximoToken();
+                    multiplasConstantes();
+                }else {
+                    erro("Faltando o valor da constante");
+                }
+            } else {
+                erro("Faltando a atriuição '=' da constante");
+            }
+        } else {
+            erro("Faltando o indentificador da constante");
+        }
+    }
+    
+    private void multiplasConstantes(){
+        if (atual.getLexema().equals(",")){
+            atual = proximoToken();
+            constantes();
+        }
+    }
+    
+    private void erro(String texto){
+        erros.add(new Token(Constants.ERRO_SINT,texto, atual.getLinha()));
+        atual = proximoToken();
     }
     
     private Token proximoToken(){
