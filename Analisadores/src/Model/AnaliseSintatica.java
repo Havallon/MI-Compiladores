@@ -73,6 +73,7 @@ public class AnaliseSintatica {
         }
     }
     
+   
     private void estruturaConstante(){
         if (automatos.isTipo(atual.getLexema())){
             atual = proximoToken();
@@ -90,6 +91,7 @@ public class AnaliseSintatica {
         }
     } 
     
+    //Declaração da constante
     private void constantes(){
         if (atual.getTipo() == Constants.IDENTIFICADOR){
             atual = proximoToken();
@@ -109,6 +111,7 @@ public class AnaliseSintatica {
         }
     }
     
+    //Não terminal de multiplas consantes
     private void multiplasConstantes(){
         if (atual.getLexema().equals(",")){
             atual = proximoToken();
@@ -116,11 +119,14 @@ public class AnaliseSintatica {
         }
     }
     
+    //Metodo para adicionar um erro sintatico na lista de erros
     private void erro(String texto){
         erros.add(new Token(Constants.ERRO_SINT,texto, atual.getLinha()));
         atual = proximoToken();
     }
     
+    
+    //Metodo para pegar o proximo token
     private Token proximoToken(){
         if (!tokens.isEmpty())
             return tokens.remove(0);
