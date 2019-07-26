@@ -1,4 +1,3 @@
-//teste
-abc
-/*teste*/
-ascd
+programa{
+	constantes{inteiro}
+}

@@ -8,7 +8,8 @@ public enum Constants {
     CADEIA_CARACTERES("Cadeia de Caracteres"), ERRORB("Comentario de bloco mal formado"),
     ESPACO("Espaço"), ERRORI("Identificador mal formado"), NULO("nulo"),
     ERRORN("Numero mal formado"), ERRORC("Cadeia de caracteres mal formada"),
-    ERRORS("Simbolo invalido"), ERRORL("Operador Logico mal formado");
+    ERRORS("Simbolo invalido"), ERRORL("Operador Logico mal formado"),
+    ERRO_SINT("Erro Sintatico");
 
     private final String valor;
 

@@ -32,6 +32,9 @@ public class Token {
 
     @Override
     public String toString() {
-        return (this.linha + " " + this.lexema + " " + this.tipo.getValor());
+        if (tipo == Constants.ERRO_SINT)
+            return ("Linha: " + linha + " - " + lexema);
+        else
+            return (this.linha + " " + this.lexema + " " + this.tipo.getValor());
     }
 }

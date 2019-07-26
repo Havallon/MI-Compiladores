@@ -2,6 +2,7 @@
 package Controller;
 
 import Model.AnaliseLexica;
+import Model.AnaliseSintatica;
 import Model.Token;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -17,9 +18,11 @@ import java.util.ArrayList;
 public class Controller {
     
     private AnaliseLexica lexica;
+    private AnaliseSintatica parser;
     
     public Controller(){
         lexica = new AnaliseLexica();
+        parser = new AnaliseSintatica();
     }
     
     //Metodo inicial
@@ -45,13 +48,33 @@ public class Controller {
         }
         
         //Lendo todos os arquivos
-        System.out.println("Analise Lexica");
         for (String[] a : arqs){
             FileReader arq = new FileReader(a[0]);
+            //Realizando a analise lexica no arquivo
             lexica.analisar(arq);
             ArrayList<Token> tokens = lexica.getTokens();
+            /*
+            * Se não houver erro lexico, realiza a analise sintatica.
+            * Caso contrario, gera um arquivo de saída avisando o erro.
+            */
             if (!lexica.getErro()){
                 System.out.println("Arquivo: " + a[1] + ".txt foi analisado lexicamente");
+                //analise sintatica
+                ArrayList<Token> erros = parser.start(tokens);
+                
+                //Verificando se há erros sintaticos, se sim salva-los em um arq.
+                if (!erros.isEmpty()){
+                    FileWriter escrita = new FileWriter("./teste/"+a[1]+".saida");
+                    PrintWriter gravar = new PrintWriter(escrita);
+                    for(Token token : erros){
+                        gravar.println(token.toString());
+                    }
+                    gravar.close();
+                    escrita.close();
+                    System.out.println("Arquivo: " + a[1] + ".txt contem erro sintatico");
+                } else{
+                    System.out.println("Arquivo: " + a[1] + ".txt foi analisado sintaticamente");
+                }
             }else{
                 FileWriter escrita = new FileWriter("./teste/"+a[1]+".saida");
                 PrintWriter gravar = new PrintWriter(escrita);

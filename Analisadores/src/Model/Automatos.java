@@ -17,6 +17,7 @@ public class Automatos {
     private final String operadorR; //Operador relacional
     private final String numero;
     private final String cadeia; //Cadeia de caracters;
+    private final String tipo;
     
     //Expressoes Regulares de cada automato.
     public Automatos() {
@@ -37,6 +38,7 @@ public class Automatos {
         this.operadorR = "\\!\\=|\\={1,2}|\\<\\=?|\\>\\=?";
         this.numero = "\\d\\d*(\\.\\d(\\d)*)?";
         this.cadeia = "\"(.)*";
+        this.tipo = "inteiro|real|boleano|texto|vazio";
     }
 
     //Método para veriicar a vericidade do token
@@ -65,7 +67,11 @@ public class Automatos {
             return new Token(Constants.NULO, palavra, linha);
         }
     }
-
+    
+    public boolean isTipo(String lexema){
+        return lexema.matches(tipo);
+    }
+    
     public String getOperadorR() {
         return operadorR;
     }
