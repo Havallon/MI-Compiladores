@@ -9,7 +9,7 @@ public enum Constants {
     ESPACO("Espaço"), ERRORI("Identificador mal formado"), NULO("nulo"),
     ERRORN("Numero mal formado"), ERRORC("Cadeia de caracteres mal formada"),
     ERRORS("Simbolo invalido"), ERRORL("Operador Logico mal formado"),
-    ERRO_SINT("Erro Sintatico");
+    ERRO_SINT("Erro Sintatico"), FIM_PROGRAMA("FIM DO PROGRAMA");
 
     private final String valor;
 

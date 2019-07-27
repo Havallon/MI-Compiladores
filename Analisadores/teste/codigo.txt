@@ -1,10 +1,9 @@
 programa{
 
-metodo teste(real a):vazio{}
+	metodo teste(real a):vazio{}
 
-metodo principala():vazio{
-}
+	metodo principala():vazio{}
 
-metodo soma(inteiro a, inteiro b):inteiro{}
+	metodo soma(inteiro a, inteiro b):inteiro{}
 
 }

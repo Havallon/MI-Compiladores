@@ -21,11 +21,12 @@ public class AnaliseSintatica {
     
     public ArrayList<Token> start(ArrayList<Token> tokens){
         this.tokens = tokens;
+        tokens.add(new Token(Constants.FIM_PROGRAMA, "$", 0));
         this.erros = new ArrayList<Token>();
         //Verificando se o escopo do programa foi iniciado
         programa();
-        if (!tokens.isEmpty()){
-            erros.add(new Token(Constants.ERRO_SINT,"Simbolos fora do escopo do programa" , tokens.get(0).getLinha()));
+        if (atual.getTipo() != Constants.FIM_PROGRAMA){
+            erros.add(new Token(Constants.ERRO_SINT,"Simbolos fora do escopo do programa" , atual.getLinha()));
         }
         return erros;
     }
@@ -61,6 +62,13 @@ public class AnaliseSintatica {
         if (primeiros.metodo(atual.getLexema())){
             metodo();
             escopoPrograma();
+        } else {
+            if (!atual.getLexema().equals("}")){
+                if (atual.getLexema().equals("constantes"))
+                    erro("Constantes só podem ser declaradas antes dos metodos");
+                else
+                    erro("Simbolo: " + atual.getLexema() + " fora do escopo de metodo");
+            }
         }
     }
     
@@ -206,10 +214,24 @@ public class AnaliseSintatica {
     //Metodo para adicionar um erro sintatico na lista de erros
     private void erro(String texto){
         erros.add(new Token(Constants.ERRO_SINT,texto, atual.getLinha()));
-        atual = proximoToken();
+        atual = proximaLinha();
         System.out.println(texto);
     }
     
+    private Token proximaLinha(){
+        if (!tokens.isEmpty()){
+            Token aux = tokens.remove(0);
+            while(aux.getLinha() == atual.getLinha() && !tokens.isEmpty()){
+                aux = tokens.remove(0);
+            }
+            return aux;
+        } else{
+            if (atual != null)
+                return new Token(Constants.NULO,"SEM LEXEMAS",atual.getLinha());
+            else
+                return atual = new Token(Constants.NULO, "arquivo vazio", 0);
+        }
+    }
     
     //Metodo para pegar o proximo token
     private Token proximoToken(){
