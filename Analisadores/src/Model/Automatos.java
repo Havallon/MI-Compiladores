@@ -25,7 +25,7 @@ public class Automatos {
         this.letra = "[a-zA-Z]";
         this.digito = "\\d";
         this.identificador = letra + "(" + letra + "|" + digito + "|_)*";
-        this.delimitador = ";|\\,|\\(|\\)|\\[|\\]|\\{|\\}|\\.";
+        this.delimitador = ";|\\,|\\(|\\)|\\[|\\]|\\{|\\}|\\.|:";
         char ascii9 = (char) 9;
         char ascii32 = (char) 32;
         this.espaco = ascii9 + "|" + ascii32;

@@ -1,7 +1,0 @@
-programa{
-
-	constantes{
-		inteiro a = 155;
-	}
-
-}

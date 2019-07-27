@@ -39,9 +39,10 @@ public class AnaliseSintatica {
             if (atual.getLexema().equals("{")){
                 atual = proximoToken();
                 //verificando se há declaração de constantes
-                if (primeiros.Constantes(atual.getLexema())){
+                if (primeiros.constantes(atual.getLexema())){
                     blocoConstantes();
                 }
+                escopoPrograma();
                 if (atual.getLexema().equals("}")){//Verificando se o programa foi finalizado
                     atual = proximoToken();
                 }
@@ -53,6 +54,89 @@ public class AnaliseSintatica {
             }
         } else {
             erro("programa não inicializado");
+        }
+    }
+    
+    private void escopoPrograma(){
+        if (primeiros.metodo(atual.getLexema())){
+            metodo();
+            escopoPrograma();
+        }
+    }
+    
+    private void metodo(){
+        atual = proximoToken();
+        if (atual.getTipo() == Constants.IDENTIFICADOR || atual.getLexema().equals("principal")){
+            atual = proximoToken();
+            if (atual.getLexema().equals("(")){
+                atual = proximoToken();
+                listaParametros(true);
+                if (atual.getLexema().equals(")")){
+                    atual = proximoToken();
+                    if (atual.getLexema().equals(":")){
+                        atual = proximoToken();
+                        if (automatos.isTipo(atual.getLexema())){
+                            atual = proximoToken();
+                            if (atual.getLexema().equals("{")){
+                                atual = proximoToken();
+                                declaracaoVariaveis();
+                                escopoMetodo();
+                                if (atual.getLexema().equals("}")){
+                                    atual = proximoToken();
+                                }else{
+                                    erro("Esta faltado } para finalizar o bloco do metodo");
+                                }
+                            }else {
+                                erro("Esta faltado { para iniciar o bloco do metodo");
+                            }
+                        }else{
+                            erro("Esta faltando declarar o tipo do retorno");
+                        }
+                    } else {
+                        erro("Esta faltando : para declarar o tipo de retorno do metodo");
+                    }
+                }else {
+                   erro("Esta faltando o ) para finalizar adeclaracao dos parametros do metodo"); 
+                }
+            } else {
+                erro("Esta faltando o ( para declarar os parametros do metodo");
+            }
+        } else {
+            erro("Faltando o nome do metodo");
+        }
+    }
+    
+    private void escopoMetodo(){
+    
+    }
+    
+    private void declaracaoVariaveis(){
+    
+    }
+    
+    private void listaParametros(boolean blank){
+        if (automatos.isTipo(atual.getLexema())){
+            atual = proximoToken();
+            if (atual.getTipo() == Constants.IDENTIFICADOR){
+                atual = proximoToken();
+                maisParametros();
+            } else {
+                erro("Esta faltando o nome da variavel do parametro");
+            }
+        } else {
+            if (atual.getTipo() != Constants.DELIMITADOR){
+                erro(atual.getLexema() + " não é um tipo de variavel");
+            }
+            else if (!blank){
+                erro("Apos a ',' é necessario adicionar outra variavel nos parametros");
+            }
+        }
+    }
+    
+    private void maisParametros(){
+        if (atual.getLexema().equals(",")){
+            atual = proximoToken();
+            listaParametros(false);
         }
     }
     
@@ -123,6 +207,7 @@ public class AnaliseSintatica {
     private void erro(String texto){
         erros.add(new Token(Constants.ERRO_SINT,texto, atual.getLinha()));
         atual = proximoToken();
+        System.out.println(texto);
     }
     
     

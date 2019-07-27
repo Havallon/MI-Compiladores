@@ -1,9 +1,10 @@
 programa{
 
-constantes{
-    real salarioInicial = 300;
-    inteiro numMaxFun = 10;
+metodo teste(real a):vazio{}
+
+metodo principala():vazio{
 }
 
+metodo soma(inteiro a, inteiro b):inteiro{}
 
 }
