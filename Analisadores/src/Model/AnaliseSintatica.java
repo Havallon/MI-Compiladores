@@ -115,11 +115,152 @@ public class AnaliseSintatica {
     }
     
     private void escopoMetodo(){
+        comandos();
+    }
     
+    private void comandos(){
+        if (primeiros.comandos(atual.getLexema())){
+            if (atual.getLexema().equals("leia")){
+                atual = proximoToken();
+                leia();
+            }
+            comandos();
+        }
+    }
+    
+    private void leia(){
+        if (atual.getLexema().equals("(")){
+            atual = proximoToken();
+            conteudoLeia();
+            if (atual.getLexema().equals(")")){
+                atual = proximoToken();
+                if (atual.getLexema().equals(";")){
+                    atual = proximoToken();
+                }else{
+                    erro("Esta faltando o ';' para finalizar o comando de leia");
+                }
+            } else {
+                erro("Esta faltando o ')' para finalizar o comando de leia");
+            }
+        }else{
+            erro("Esta faltando o '(' apos o comando de leia");
+        }
+    }
+    
+    private void conteudoLeia(){
+        if(atual.getTipo() == Constants.IDENTIFICADOR){
+            atual = proximoToken();
+            vetor();
+            lerMais();
+        }else{
+            erro("Esta faltando uma variavel para o parametro do metodo leia");
+        }
+    }
+    
+    private void lerMais(){
+        if (atual.getLexema().equals(",")){
+            atual = proximoToken();
+            conteudoLeia();
+        }
+    }
+    
+    private void matriz(){
+        if (atual.getLexema().equals("[")){
+            atual = proximoToken();
+            opI2();
+            opIndice();
+            if (atual.getLexema().equals("]")){
+                atual = proximoToken();
+            } else {
+                erro("Esta faltando ']' na utilizacao da matriz");
+            }
+        }
+    }
+    
+    private void vetor(){
+        if (atual.getLexema().equals("[")){
+            atual = proximoToken();
+            opI2();
+            opIndice();
+            if (atual.getLexema().equals("]")){
+                atual = proximoToken();
+                matriz();
+            }else{
+                erro("Esta faltando ']' na utilizacao do vetor");
+            }
+        }
+    }
+    
+    private void opIndice(){
+        if (atual.getTipo() == Constants.OPERADOR_ARITMETICO){
+            atual = proximoToken();
+            opI2();
+            opIndice();
+        }
+    }
+    
+    private void opI2(){
+        if (atual.getTipo() == Constants.IDENTIFICADOR || atual.getTipo() == Constants.NUMERO){
+            atual = proximoToken();
+        }else{
+            erro("Está faltando o indice do vetor");
+        }
     }
     
     private void declaracaoVariaveis(){
+        if (atual.getLexema().equals("variaveis")){
+            atual = proximoToken();
+            if (atual.getLexema().equals("{")){
+                atual = proximoToken();
+                varV();
+                if (atual.getLexema().equals("}")){
+                    atual = proximoToken();
+                }else {
+                    erro("Esta faltando o } para finalizar o bloco das variaveiss");
+                }
+            }else{
+                erro("Esta faltando o { para iniciar o bloco das variaveis");
+            }
+        }
+    }
     
+    private void varV(){
+        if (automatos.isTipo(atual.getLexema())){
+            atual = proximoToken();
+            complementoV();
+            maisVariaveis();
+        } else {
+            erro("Está faltando a tipagem da variavel");
+        }
+    }
+    
+    private void complementoV(){
+        if (atual.getTipo() == Constants.IDENTIFICADOR){
+            atual = proximoToken();
+            vetor();
+            variavelMesmoTipo();
+        } else {
+            erro("Esta faltando a variavel a ser declarada");
+        }
+    }
+    
+    private void variavelMesmoTipo(){
+        if (atual.getLexema().equals(";")){
+            atual = proximoToken();
+        }
+        else if (atual.getLexema().equals(",")){
+            atual = proximoToken();
+            complementoV();
+        }
+        else{
+            erro("Esta faltando o ';' para finalizar a declaração das variaveis");
+        }
+    }
+    
+    private void maisVariaveis(){
+        if (automatos.isTipo(atual.getLexema())){
+            varV();
+        }
     }
     
     private void listaParametros(boolean blank){

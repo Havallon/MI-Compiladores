@@ -1,6 +1,8 @@
 
 package Model;
 
+import java.util.ArrayList;
+
 public class Primeiros {
     
     public Primeiros(){
@@ -18,5 +20,12 @@ public class Primeiros {
             return true;
         else
             return false;
+    }
+    
+    public boolean comandos(String lexema){
+        ArrayList<String> comandos = new ArrayList<>();
+        comandos.add("leia");
+        
+        return comandos.contains(lexema);
     }
 }

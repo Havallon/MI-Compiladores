@@ -1,1 +1,2 @@
-Linha: 9 - Constantes só podem ser declaradas antes dos metodos
+Linha: 10 - Esta faltando uma variavel para o parametro do metodo leia
+Linha: 11 - Esta faltando o ')' para finalizar o comando de leia
