@@ -159,8 +159,8 @@ OperadoresLogicos = ('&&' | '||')
 <op> ::= OperadorAritmeticos <tipoTermo> <op>|<>
       
 <blocoSe> ::= <comandos><blocoSe> | <>
-<condSenao> ::= <condse> 'entao' | <>
-<senao> ::= <> | 'senao' <condSenao> '{' <blocoSe> '}'
+<condSenao> ::= 'se' <condse> 'entao' | <>
+<senao> ::= <> | 'senao' <condSenao> '{' <blocoSe> '}' <senao>
 
 !--------------------------------------------------
 ! Comandos para os blocos dos escopo de se, enquanto e metodos
