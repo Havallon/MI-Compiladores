@@ -1,21 +1,5 @@
 programa{
-	constantes{}
-	metodo teste(real a):vazio{
-		leia(a);
-		leia(c);
+	metodo teste():vazio{
+		soma(raiz(2),maximo(2,3),teste(falso));
 	}
-
-	metodo principala():vazio{
-		variaveis{
-			real pi,e;
-			inteiro i[0+a+1.5][1];
-		}
-		leia(a,c);
-		leia(b[i]);
-	}
-
-	metodo soma(inteiro a, inteiro b):inteiro{
-		leia(c);
-	}
-
 }

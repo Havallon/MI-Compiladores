@@ -90,7 +90,7 @@ OperadoresLogicos = ('&&' | '||')
 ! -------------------------------------------------
 
 !Sempre colocar um espaço entre o menos e o número, ex: (- 5)
-<atribuicaoDeVariavel> ::= Identificadores<Vetor>  '=' <verificaCaso>';'
+<atribuicaoDeVariavel> ::= '=' <verificaCaso>';'
 <verificaCaso> ::= <incremento> 
                 | <expressao> 
                 | <booleano>
@@ -121,7 +121,7 @@ OperadoresLogicos = ('&&' | '||')
 ! -------------------------------------------------
 ! Incrementador
 ! -------------------------------------------------    
-<incrementador> ::= Identificadores<Vetor> Incrementador ';'
+<incrementador> ::= Incrementador ';'
 
 !--------------------------------------------------
 ! Escrita
@@ -145,12 +145,12 @@ OperadoresLogicos = ('&&' | '||')
 <maisCond> ::= OperadoresLogicos <cond> <maisCond> | <>
 <se> ::= 'se' <condse> 'entao''{' <blocoSe> '}' <senao>
 <condse> ::= '(' <cond> <maisCond> ')'
-<cond> ::= <termo> OperadoresRelacionais <termo> 
-        | <negar> Identificadores<Vetor> 
+!<cond> ::= <termo> OperadoresRelacionais <termo> 
+!        | <negar> Identificadores<Vetor> 
 
-       
-       
-<tipoTermo> ::= Identificadores<Vetor> 
+<cond> ::= <termo><tipoCond> 
+<tipoCond> ::= OperadoresRelacionais <termo> | <>       
+<tipoTermo> ::= <negar>Identificadores<Vetor> 
              | Numeros 
              | CadeiaCaracteres 
              | TipoBooleano
@@ -165,7 +165,9 @@ OperadoresLogicos = ('&&' | '||')
 !--------------------------------------------------
 ! Comandos para os blocos dos escopo de se, enquanto e metodos
 !--------------------------------------------------
-<comandos> ::= <leia> | <escreva> | <se> | <enquanto> | <atribuicaoDeVariavel> | <chamadaDeMetodo> ';' | <incrementador> | 'resultado' <retorno> ';'           
+<comandos> ::= 1<leia> | <escreva> | 1<se> | <enquanto> | 1Identificadores <qlComando>| 'resultado' <retorno> ';'           
+<qlComando> ::= 1'('<chamadaDeMetodo> | 1<vetor><qlComando2>
+<qlComando2> ::= 1<incrementador>|<atribuicaoDeVariavel>
 !<retorno> ::= Identificadores<Vetor> | Numero | StringLiteral | TipoBooleano | <chamadaDeMetodo> | <>
 <retorno> ::= <verificaCaso> | <>
 
@@ -181,7 +183,7 @@ OperadoresLogicos = ('&&' | '||')
 !Chamada de  Métodos
 !--------------------------------------------------
 
-<chamadaDeMetodo> ::= Identificadores'('<var>')'
+<chamadaDeMetodo> ::= <var>')'';'
 <var> ::= Identificadores<Vetor> <maisVariavel> | <metodoParametro>|<>
 <maisVariavel> ::= ','<var> | <>
 <metodoParametro> ::= Identificadores'('<var>')'<maisVariavel>

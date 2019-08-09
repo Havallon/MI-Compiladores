@@ -118,13 +118,228 @@ public class AnaliseSintatica {
         comandos();
     }
     
+    private void incrementador(){
+        if (atual.getLexema().equals("++") || atual.getLexema().equals("--")){
+            atual = proximoToken();
+            if (atual.getLexema().equals(";")){
+                    atual = proximoToken();
+            }else{
+                erro("Faltando o ';' para finalizar a operacao");
+            }
+        } else{
+            erro("Faltando o incrementado na variavel");
+        }
+    }
+    
     private void comandos(){
-        if (primeiros.comandos(atual.getLexema())){
+        if (primeiros.comandos(atual)){
             if (atual.getLexema().equals("leia")){
                 atual = proximoToken();
                 leia();
             }
+            else if (atual.getLexema().equals("se")){
+                atual = proximoToken();
+                se();
+            }
+            else if (atual.getTipo() == Constants.IDENTIFICADOR){
+                atual = proximoToken();
+                qlComando();
+            }
             comandos();
+        }
+    }
+    
+    private void qlComando(){
+        if (atual.getLexema().equals("(")){
+            atual = proximoToken();
+            chamadaDeMetodos();
+        }else{
+            vetor();
+            qlComando2();
+        }
+    }
+    
+    private void chamadaDeMetodos(){
+        var(true);
+        if (atual.getLexema().equals(")")){
+            atual = proximoToken();
+            if (atual.getLexema().equals(";")){
+                atual = proximoToken();
+            } else {
+                erro("Esta faltando o ';' para finalizar a chamda de metodo");
+            }
+        } else{
+            erro("Esta faltando o ')' da chamada de metodo");
+        }
+    }
+    
+    private void var(boolean blank){
+        if (atual.getTipo() == Constants.NUMERO || atual.getTipo() == Constants.CADEIA_CARACTERES
+                || automatos.isTipoBoleano(atual.getLexema())){
+            atual = proximoToken();
+            maisVariavel();
+        } else if (atual.getTipo() == Constants.IDENTIFICADOR){
+            atual = proximoToken();
+            if (atual.getLexema().equals("(")){
+                atual = proximoToken();
+                var(true);
+                if (atual.getLexema().equals(")")){
+                    atual = proximoToken();
+                    maisVariavel(); 
+                } else{
+                    erro("Faltando ')' na chamada de metodo");
+                }
+            } else{
+                vetor();
+                maisVariavel();
+            }
+        } else {
+            if (!blank){
+                erro("Ta faltando mais parametros");
+            }
+        }
+    }
+    
+    private void maisVariavel(){
+        if (atual.getLexema().equals(",")){
+            atual = proximoToken();
+            var(false);
+        }
+    }
+    
+    private void qlComando2(){
+        if (atual.getLexema().equals('=')){
+            //atribuicaoDeVariavel();
+        }else{
+            incrementador();
+        }
+    }
+    
+    private void se(){
+        condSe();
+        if (atual.getLexema().equals("entao")){
+            atual = proximoToken();
+            if (atual.getLexema().equals("{")){
+                atual = proximoToken();
+                blocoSe();
+                if (atual.getLexema().equals("}")){
+                    atual = proximoToken();
+                    senao();
+                }else{
+                    erro("Esta faltando o '}' para finalizar o bloco se");
+                }
+            }else {
+                erro("Esta faltando o '{' para iniciar o bloco do se");
+            }
+        }else{
+            erro("Esta faltando o 'entao' para iniciar o bloco do se");
+        }
+    }
+    
+    private void senao(){
+        if (atual.getLexema().equals("senao")){
+            atual = proximoToken();
+            condSenao();
+            if (atual.getLexema().equals("{")){
+                atual = proximoToken();
+                blocoSe();
+                if (atual.getLexema().equals("}")){
+                    atual = proximoToken();
+                    senao();
+                }else{
+                    erro("Faltando o } para finalizar o bloco do senao");
+                }
+            } else {
+                erro("Faltando o { para iniciar o bloco do senao");
+            }
+        }
+    }
+    
+    private void condSenao(){
+        if (atual.getLexema().equals("se")){
+            atual = proximoToken();
+            condSe();
+            if (atual.getLexema().equals("entao")){
+                atual = proximoToken();
+            }else{
+                erro("Faltando o 'entao' no bloco do senao");
+            }
+        }
+    }
+    
+    private void blocoSe(){
+        if (primeiros.comandos(atual)){
+            comandos();
+            blocoSe();
+        }
+    }
+    
+    private void condSe(){
+        if (atual.getLexema().equals("(")){
+            atual = proximoToken();
+            cond();
+            maisCond();
+            if (atual.getLexema().equals(")")){
+                atual = proximoToken();
+            }else{
+                erro("Esta faltando o ')' para terminar a condicao do se" );
+            }
+        } else{
+            erro("Esta faltando o '(' para iniciar a condicao do se");
+        }
+    }
+    
+    private void maisCond(){
+        if (atual.getTipo() == Constants.OPERADOR_LOGICO){
+            atual = proximoToken();
+            cond();
+            maisCond();
+        }
+    }
+    
+    private void cond(){
+        termo();
+        tipoCond();
+    }
+    
+    private void negar(){
+        if (atual.getLexema().equals("!")){
+            atual = proximoToken();
+        }
+    }
+    
+    private void tipoCond(){
+        if (atual.getTipo() == Constants.OPERADOR_RELACIONAL){
+            atual = proximoToken();
+            termo();
+        }
+    }
+    
+    private void termo(){
+        tipoTermo();
+        op();
+    }
+    
+    private void op(){
+        if (atual.getTipo() == Constants.OPERADOR_ARITMETICO){
+            atual = proximoToken();
+            tipoTermo();
+            op();
+        }
+    }
+    
+    private void tipoTermo(){
+        if (atual.getTipo() == Constants.NUMERO || atual.getTipo() == Constants.CADEIA_CARACTERES
+            || automatos.isTipoBoleano(atual.getLexema())){
+            atual = proximoToken();
+        }else{
+            negar();
+            if (atual.getTipo() == Constants.IDENTIFICADOR){
+                atual = proximoToken();
+                vetor();
+            } else{
+                erro("Esta falando a condicao do se");
+            }
         }
     }
     
@@ -372,6 +587,13 @@ public class AnaliseSintatica {
             else
                 return atual = new Token(Constants.NULO, "arquivo vazio", 0);
         }
+    }
+    
+    private Token verToken(){
+        if (!tokens.isEmpty())
+            return tokens.get(0);
+        else
+            return new Token(Constants.NULO,"SEM LEXEMAS",atual.getLinha());
     }
     
     //Metodo para pegar o proximo token

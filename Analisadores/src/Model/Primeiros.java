@@ -1,6 +1,7 @@
 
 package Model;
 
+import Model.util.Constants;
 import java.util.ArrayList;
 
 public class Primeiros {
@@ -22,10 +23,10 @@ public class Primeiros {
             return false;
     }
     
-    public boolean comandos(String lexema){
+    public boolean comandos(Token token){
         ArrayList<String> comandos = new ArrayList<>();
         comandos.add("leia");
-        
-        return comandos.contains(lexema);
+        comandos.add("se");
+        return (comandos.contains(token.getLexema()) || token.getTipo() == Constants.IDENTIFICADOR);
     }
 }
