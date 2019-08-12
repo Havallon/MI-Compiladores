@@ -70,6 +70,10 @@ public class Automatos {
         }
     }
     
+    public boolean isIncrementador(String lexema){
+        return (lexema.equals("++") || lexema.equals("--"));
+    }
+    
     public boolean isTipo(String lexema){
         return lexema.matches(tipo);
     }

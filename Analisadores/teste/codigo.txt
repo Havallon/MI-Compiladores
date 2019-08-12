@@ -1,8 +1,6 @@
 programa{
 	
 	metodo principal():vazio{
-		enquanto(!a == b){
-			leia(a);
-		}	
+		resultado soma(2,2);
 	}
 }	

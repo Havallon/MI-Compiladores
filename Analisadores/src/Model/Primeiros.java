@@ -28,6 +28,8 @@ public class Primeiros {
         comandos.add("leia");
         comandos.add("se");
         comandos.add("enquanto");
+        comandos.add("escreva");
+        comandos.add("resultado");
         return (comandos.contains(token.getLexema()) || token.getTipo() == Constants.IDENTIFICADOR);
     }
 }

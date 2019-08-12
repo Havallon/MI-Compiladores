@@ -145,11 +145,63 @@ public class AnaliseSintatica {
                 atual = proximoToken();
                 enquanto();
             }
+            else if (atual.getLexema().equals("escreva")){
+                atual = proximoToken();
+                escreva();
+            }
+            else if (atual.getLexema().equals("resultado")){
+                atual = proximoToken();
+                resultado();
+            }
             else if (atual.getTipo() == Constants.IDENTIFICADOR){
                 atual = proximoToken();
                 qlComando();
             }
             comandos();
+        }
+    }
+    
+    private void resultado(){
+        if (atual.getLexema().equals(";")){
+            atual = proximoToken();
+        }else{
+            verificaCaso();
+            if (atual.getLexema().equals(";")){
+                atual = proximoToken();
+            }else{
+                erro("Faltando ';'");
+            }
+        }
+    }
+    
+    private void escreva(){
+        if (atual.getLexema().equals("(")){
+            atual = proximoToken();
+            paramEscrita();
+            if (atual.getLexema().equals(")")){
+                atual = proximoToken();
+                if (atual.getLexema().equals(";")){
+                    atual = proximoToken();
+                }else{
+                    erro("Faltando o ';'");
+                }
+            }else{
+                erro("Esta faltando ')' para finalizar o escreva");
+            }
+        }else{
+            erro("Está faltando '(' para iniciar o escreva");
+        }
+    }
+    
+    private void paramEscrita(){
+        verificaCaso();
+        maisParamEscrita();
+    }
+    
+    private void maisParamEscrita(){
+        if (atual.getLexema().equals(",")){
+            atual = proximoToken();
+            paramEscrita();
         }
     }
     
@@ -201,6 +253,11 @@ public class AnaliseSintatica {
         if (atual.getLexema().equals("(")){
             atual = proximoToken();
             chamadaDeMetodos();
+            if (atual.getLexema().equals(";")){
+                atual = proximoToken();
+            } else{
+                erro("Faltando ';'");
+            }
         }else{
             vetor();
             qlComando2();
@@ -211,11 +268,7 @@ public class AnaliseSintatica {
         var(true);
         if (atual.getLexema().equals(")")){
             atual = proximoToken();
-            if (atual.getLexema().equals(";")){
-                atual = proximoToken();
-            } else {
-                erro("Esta faltando o ';' para finalizar a chamda de metodo");
-            }
+
         } else{
             erro("Esta faltando o ')' da chamada de metodo");
         }
@@ -256,10 +309,103 @@ public class AnaliseSintatica {
     }
     
     private void qlComando2(){
-        if (atual.getLexema().equals('=')){
-            //atribuicaoDeVariavel();
+        if (atual.getLexema().equals("=")){
+            atual = proximoToken();
+            atribuicaoDeVariavel();
         }else{
             incrementador();
+        }
+    }
+    
+    private void atribuicaoDeVariavel(){
+        verificaCaso();
+        if (atual.getLexema().equals(";")){
+            atual = proximoToken();
+        }else{
+            erro("Esta faltando ';' no finao do comando");
+        }
+    }
+    
+    private void verificaCaso(){
+        if (atual.getTipo() == Constants.IDENTIFICADOR){
+            atual = proximoToken();
+            vetor();
+            if (automatos.isIncrementador(atual.getLexema())){
+                atual = proximoToken();
+            }else if(atual.getTipo() == Constants.DELIMITADOR){
+                if (atual.getLexema().equals(("("))){
+                    atual = proximoToken();
+                    chamadaDeMetodos();
+                }
+            }else if (atual.getTipo() == Constants.OPERADOR_ARITMETICO){
+                maisOperacoes();
+            }else{
+                erro("Comando invalido");
+            }
+        }else if (automatos.isIncrementador(atual.getLexema())){
+            atual = proximoToken();
+            if (atual.getTipo() == Constants.IDENTIFICADOR){
+                atual = proximoToken();
+                vetor();
+            }else{
+                erro("Apos o incremento precisa de uma variavel");
+            }
+        } else if (automatos.isTipoBoleano(atual.getLexema())){
+            atual = proximoToken();
+        } else if (atual.getTipo() == Constants.NUMERO || atual.getTipo() == Constants.CADEIA_CARACTERES){
+            atual = proximoToken();
+            maisOperacoes();
+        } else if (atual.getLexema().equals("(")){
+            atual = proximoToken();
+            verificaCaso();
+            if (atual.getLexema().equals(")")){
+                atual = proximoToken();
+                verificaCaso();
+            } else{
+                erro("esta falando o ')'");
+            }
+        }
+        else if (atual.getTipo() == Constants.OPERADOR_ARITMETICO){
+            maisOperacoes();
+        }
+        else{
+            erro("Comando invalido ou incompleto");
+        }
+    }
+        
+    private void maisOperacoes(){
+        if (atual.getTipo() == Constants.OPERADOR_ARITMETICO){
+            atual = proximoToken();
+            expressao();
+        }
+    }
+    
+    private void expressao(){
+        if (atual.getLexema().equals("(")){
+            atual = proximoToken();
+            expressao();
+            if (atual.getLexema().equals(")")){
+                atual = proximoToken();
+            }else{
+                erro("Faltando o ')'");
+            }
+        } else{
+            operador();
+            maisOperacoes();
+        }
+    }
+    
+    private void operador(){
+        if(atual.getTipo() == Constants.IDENTIFICADOR){
+            atual = proximoToken();
+            if (atual.equals("(")){
+                atual = proximoToken();
+                chamadaDeMetodos();
+            } else{
+                vetor();
+            }
+        } else if (atual.getTipo() == Constants.CADEIA_CARACTERES || atual.getTipo() == Constants.NUMERO){
+            atual = proximoToken();
         }
     }
     

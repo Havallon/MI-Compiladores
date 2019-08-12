@@ -100,15 +100,15 @@ OperadoresLogicos = ('&&' | '||')
 <termoIncremento> ::= Incrementador Identificadores<Vetor> | Identificadores<Vetor>  Incrementador
 
 
-<booleano> ::= '('<termoBooleano>')' | TipoBooleano | '!' <termoBooleano2>
-<termoBooleano> ::= TipoBoleano | '!' <termoBooleano2>
+<booleano> ::= '('<termoBooleano>')' | <termoBooleano>
+<termoBooleano> ::= <termoBooleano2> | '!' <termoBooleano2>
 <termoBooleano2> ::= TipoBooleano | Identificadores<Vetor> 
        
 <expressao> ::= '('<expressao>')' <termoExp> | <operador> <maisOperacoes>
 <termoExp> ::= OperadoresAritmeticos <expressao> | <>
                       
-<maisOperacoes> ::= OperadoresAritmeticos <termoMaisOp> | <>
-<termoMaisOp> ::= <maisOperacoes> | <expressao>
+<maisOperacoes> ::= OperadoresAritmeticos <expressao> | <>
+
                  
 <operador> ::=  Numeros
                 | CadeiaCaracteres
@@ -165,9 +165,9 @@ OperadoresLogicos = ('&&' | '||')
 !--------------------------------------------------
 ! Comandos para os blocos dos escopo de se, enquanto e metodos
 !--------------------------------------------------
-<comandos> ::= 1<leia> | <escreva> | 1<se> | 1<enquanto> | 1Identificadores <qlComando>| 'resultado' <retorno> ';'           
-<qlComando> ::= 1'('<chamadaDeMetodo> | 1<vetor><qlComando2>
-<qlComando2> ::= 1<incrementador>|<atribuicaoDeVariavel>
+<comandos> ::= 1<leia> | 1<escreva> | 1<se> | 1<enquanto> | 1Identificadores 1<qlComando>| 'resultado' <retorno> ';'           
+<qlComando> ::= 1'('<chamadaDeMetodo> | 1<vetor>1<qlComando2>
+<qlComando2> ::= 1<incrementador>|1<atribuicaoDeVariavel>
 !<retorno> ::= Identificadores<Vetor> | Numero | StringLiteral | TipoBooleano | <chamadaDeMetodo> | <>
 <retorno> ::= <verificaCaso> | <>
 
