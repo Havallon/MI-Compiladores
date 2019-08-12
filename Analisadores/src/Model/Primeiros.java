@@ -27,6 +27,7 @@ public class Primeiros {
         ArrayList<String> comandos = new ArrayList<>();
         comandos.add("leia");
         comandos.add("se");
+        comandos.add("enquanto");
         return (comandos.contains(token.getLexema()) || token.getTipo() == Constants.IDENTIFICADOR);
     }
 }

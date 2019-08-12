@@ -165,7 +165,7 @@ OperadoresLogicos = ('&&' | '||')
 !--------------------------------------------------
 ! Comandos para os blocos dos escopo de se, enquanto e metodos
 !--------------------------------------------------
-<comandos> ::= 1<leia> | <escreva> | 1<se> | <enquanto> | 1Identificadores <qlComando>| 'resultado' <retorno> ';'           
+<comandos> ::= 1<leia> | <escreva> | 1<se> | 1<enquanto> | 1Identificadores <qlComando>| 'resultado' <retorno> ';'           
 <qlComando> ::= 1'('<chamadaDeMetodo> | 1<vetor><qlComando2>
 <qlComando2> ::= 1<incrementador>|<atribuicaoDeVariavel>
 !<retorno> ::= Identificadores<Vetor> | Numero | StringLiteral | TipoBooleano | <chamadaDeMetodo> | <>
@@ -200,9 +200,9 @@ OperadoresLogicos = ('&&' | '||')
 <enquanto> ::= 'enquanto' '(' <operacao_relacional> ')' '{' <conteudo_laco> '}'
 
 !Operação relacional
-<operacao_relacional> ::= <complemento_operador> OperadoresRelacionais <complemento_operador> | <negar> Identificadores<Vetor>
-
-<complemento_operador> ::= Identificadores<Vetor> | Numeros | CadeiaCaracteres | TipoBooleano
+<operacao_relacional> ::= <complemento_operador><operacao_relacional2> 
+<operacao_relacional2> ::= OperadoresRelacionais <complemento_operador> | <>
+<complemento_operador> ::= <negar>Identificadores<Vetor> | Numeros | CadeiaCaracteres | TipoBooleano
                                               
 !Conteudo laco
 <conteudo_laco> ::= <comandos> <conteudo_laco> | <>

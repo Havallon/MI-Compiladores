@@ -1,5 +1,8 @@
 programa{
-	metodo teste():vazio{
-		soma(raiz(2),maximo(2,3),teste(falso));
+	
+	metodo principal():vazio{
+		enquanto(!a == b){
+			leia(a);
+		}	
 	}
-}
+}	

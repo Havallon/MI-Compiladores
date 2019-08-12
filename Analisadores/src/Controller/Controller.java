@@ -73,6 +73,11 @@ public class Controller {
                     escrita.close();
                     System.out.println("Arquivo: " + a[1] + ".txt contem erro sintatico");
                 } else{
+                    FileWriter escrita = new FileWriter("./teste/"+a[1]+".saida");
+                    PrintWriter gravar = new PrintWriter(escrita);
+                    gravar.println("");
+                    gravar.close();
+                    escrita.close();
                     System.out.println("Arquivo: " + a[1] + ".txt foi analisado sintaticamente");
                 }
             }else{

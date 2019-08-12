@@ -141,11 +141,59 @@ public class AnaliseSintatica {
                 atual = proximoToken();
                 se();
             }
+            else if (atual.getLexema().equals("enquanto")){
+                atual = proximoToken();
+                enquanto();
+            }
             else if (atual.getTipo() == Constants.IDENTIFICADOR){
                 atual = proximoToken();
                 qlComando();
             }
             comandos();
+        }
+    }
+    
+    private void enquanto(){
+        if (atual.getLexema().equals("(")){
+            atual = proximoToken();
+            operacaoRelacional();
+            if (atual.getLexema().equals(")")){
+                atual = proximoToken();
+                if (atual.getLexema().equals("{")){
+                    atual = proximoToken();
+                    conteudoLaco();
+                    if (atual.getLexema().equals("}")){
+                        atual = proximoToken();
+                    } else{
+                        erro("Esta faltando '}' para finalizar o bloco do enquanto");
+                    }
+                } else{
+                    erro("Esta faltando '{' para iniciar o bloco do enquanto");
+                }
+            }else{
+                erro("Esta faltando o ')' para finalizar a condicao");
+            }
+        }else{
+            erro("Esta faltando o '(' para iniciar a condicao");
+        }
+    }
+    
+    private void conteudoLaco(){
+        if (primeiros.comandos(atual)){
+            comandos();
+            conteudoLaco();
+        }
+    }
+    
+    private void operacaoRelacional(){
+        tipoTermo();
+        operacaoRelacional2();
+    }
+    
+    private void operacaoRelacional2(){
+        if (atual.getTipo() == Constants.OPERADOR_RELACIONAL){
+            atual = proximoToken();
+            tipoTermo();
         }
     }
     
@@ -338,7 +386,7 @@ public class AnaliseSintatica {
                 atual = proximoToken();
                 vetor();
             } else{
-                erro("Esta falando a condicao do se");
+                erro("Esta falando a condicao");
             }
         }
     }
