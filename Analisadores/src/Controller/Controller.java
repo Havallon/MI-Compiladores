@@ -75,7 +75,7 @@ public class Controller {
                 } else{
                     FileWriter escrita = new FileWriter("./teste/"+a[1]+".saida");
                     PrintWriter gravar = new PrintWriter(escrita);
-                    gravar.println("");
+                    gravar.println("SUCESSO");
                     gravar.close();
                     escrita.close();
                     System.out.println("Arquivo: " + a[1] + ".txt foi analisado sintaticamente");
