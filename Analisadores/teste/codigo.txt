@@ -1,6 +1,0 @@
-programa{
-	
-	metodo principal():vazio{
-		resultado soma(2,2);
-	}
-}	

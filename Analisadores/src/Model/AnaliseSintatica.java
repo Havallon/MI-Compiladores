@@ -206,28 +206,18 @@ public class AnaliseSintatica {
     }
     
     private void enquanto(){
-        if (atual.getLexema().equals("(")){
+        condSe();
+        if (atual.getLexema().equals("{")){
             atual = proximoToken();
-            operacaoRelacional();
-            if (atual.getLexema().equals(")")){
+            conteudoLaco();
+            if (atual.getLexema().equals("}")){
                 atual = proximoToken();
-                if (atual.getLexema().equals("{")){
-                    atual = proximoToken();
-                    conteudoLaco();
-                    if (atual.getLexema().equals("}")){
-                        atual = proximoToken();
-                    } else{
-                        erro("Esta faltando '}' para finalizar o bloco do enquanto");
-                    }
-                } else{
-                    erro("Esta faltando '{' para iniciar o bloco do enquanto");
-                }
-            }else{
-                erro("Esta faltando o ')' para finalizar a condicao");
+            } else {
+                erro("Está faltando '}' para terminar o bloco do enquanto");
             }
-        }else{
-            erro("Esta faltando o '(' para iniciar a condicao");
-        }
+        } else{
+            erro("Está faltando '{' para iniciar o bloco do enquanto");
+        }        
     }
     
     private void conteudoLaco(){
@@ -329,18 +319,24 @@ public class AnaliseSintatica {
     private void verificaCaso(){
         if (atual.getTipo() == Constants.IDENTIFICADOR){
             atual = proximoToken();
+            
+            if (atual.getLexema().equals("(")){
+                atual = proximoToken();
+                chamadaDeMetodos();
+                if (atual.getTipo() == Constants.OPERADOR_ARITMETICO){
+                    colocarToken(atual);
+                    atual = colocarToken();
+                    expressao();
+                }
+                return;
+            }
             vetor();
             if (automatos.isIncrementador(atual.getLexema())){
                 atual = proximoToken();
-            }else if(atual.getTipo() == Constants.DELIMITADOR){
-                if (atual.getLexema().equals(("("))){
-                    atual = proximoToken();
-                    chamadaDeMetodos();
-                }
             }else if (atual.getTipo() == Constants.OPERADOR_ARITMETICO){
-                maisOperacoes();
-            }else{
-                erro("Comando invalido");
+                colocarToken(atual);
+                atual = colocarToken();
+                expressao();
             }
         }else if (automatos.isIncrementador(atual.getLexema())){
             atual = proximoToken();
@@ -353,62 +349,107 @@ public class AnaliseSintatica {
         } else if (automatos.isTipoBoleano(atual.getLexema())){
             atual = proximoToken();
         } else if (atual.getTipo() == Constants.NUMERO || atual.getTipo() == Constants.CADEIA_CARACTERES){
-            atual = proximoToken();
-            maisOperacoes();
+            expressao();
         } else if (atual.getLexema().equals("(")){
             atual = proximoToken();
             verificaCaso();
             if (atual.getLexema().equals(")")){
                 atual = proximoToken();
-                verificaCaso();
+                if (atual.getTipo() == Constants.OPERADOR_ARITMETICO){
+                    colocarToken(atual);
+                    atual = colocarToken();
+                    expressao();
+                }
+                return;
             } else{
                 erro("esta falando o ')'");
             }
         }
-        else if (atual.getTipo() == Constants.OPERADOR_ARITMETICO){
-            maisOperacoes();
+        else if (atual.getLexema().equals("!")){
+            atual = proximoToken();
+            if (atual.getTipo() == Constants.IDENTIFICADOR){
+                atual = proximoToken();
+                vetor();
+            }else if (automatos.isTipoBoleano(atual.getLexema())){
+                atual = proximoToken();
+            } else{
+                erro("Apos o '!' tem que vim um variavel ou um tipo booleano");
+            }
         }
         else{
             erro("Comando invalido ou incompleto");
         }
     }
-        
-    private void maisOperacoes(){
-        if (atual.getTipo() == Constants.OPERADOR_ARITMETICO){
-            atual = proximoToken();
-            expressao();
+    
+    private void expressao(){
+        multExp();
+        E2();
+    }
+    
+    private void E2(){
+        if (atual.getLexema().equals("+") || atual.getLexema().equals("-")){
+            exp2();
+            E2();
         }
     }
     
-    private void expressao(){
-        if (atual.getLexema().equals("(")){
+    private void exp2(){
+        if (atual.getLexema().equals("+") || atual.getLexema().equals("-")){
+            atual = proximoToken();
+            multExp();
+        }
+    }
+    
+    private void multExp(){
+        negate();
+        M2();    
+    }
+    
+    private void M2(){
+        if (atual.getLexema().equals("*") || atual.getLexema().equals("/")){
+            mul2();
+            M2();
+        }
+    }
+    
+    private void mul2(){
+        if (atual.getLexema().equals("*") || atual.getLexema().equals("/")){
+            atual = proximoToken();
+            negate();
+        }
+    }
+    
+    private void negate(){
+        if (atual.getLexema().equals("-")){
+            atual = proximoToken();
+        }
+        value();
+    }
+    
+    private void value(){
+        if (atual.getTipo() == Constants.IDENTIFICADOR){
+            atual = proximoToken();
+            if (atual.getLexema().equals("(")){
+                atual = proximoToken();
+                chamadaDeMetodos();
+            }else
+                vetor();
+        } else if (atual.getTipo() == Constants.NUMERO || atual.getTipo() == Constants.CADEIA_CARACTERES){
+            atual = proximoToken();
+        } else if (atual.getLexema().equals("(")){
             atual = proximoToken();
             expressao();
             if (atual.getLexema().equals(")")){
                 atual = proximoToken();
-            }else{
-                erro("Faltando o ')'");
-            }
-        } else{
-            operador();
-            maisOperacoes();
-        }
-    }
-    
-    private void operador(){
-        if(atual.getTipo() == Constants.IDENTIFICADOR){
-            atual = proximoToken();
-            if (atual.equals("(")){
-                atual = proximoToken();
-                chamadaDeMetodos();
             } else{
-                vetor();
+                erro("Está faltando ')'");
             }
-        } else if (atual.getTipo() == Constants.CADEIA_CARACTERES || atual.getTipo() == Constants.NUMERO){
-            atual = proximoToken();
+        } else {
+            erro("Erro no valor");
         }
     }
     
+ 
     private void se(){
         condSe();
         if (atual.getLexema().equals("entao")){
@@ -788,6 +829,16 @@ public class AnaliseSintatica {
             return tokens.get(0);
         else
             return new Token(Constants.NULO,"SEM LEXEMAS",atual.getLinha());
+    }
+    
+    private void colocarToken(Token t){
+        tokens.add(0,t);
+    }
+    
+    private Token colocarToken(){
+        Token t = new Token(Constants.IDENTIFICADOR, "a", atual.getLinha());
+        //tokens.add(0, t);
+        return t;
     }
     
     //Metodo para pegar o proximo token

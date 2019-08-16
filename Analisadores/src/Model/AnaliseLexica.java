@@ -51,6 +51,9 @@ public class AnaliseLexica {
 
             //Varrendo todos caractes, tentando identificar o token
             for (int i = 0; i < aux.length; i++) {
+                if ((int)aux[i] > 2000){
+                    i++;
+                }
                 token = token + aux[i];
                 switch (automatos.verificarToken(token, linhas).getTipo()) {
                     /*
@@ -171,7 +174,7 @@ public class AnaliseLexica {
                                 olhando os tokens anteriores.
                                 */
                                 else if (tokenAnterior == Constants.IDENTIFICADOR
-                                        || tokenAnterior == Constants.NUMERO) {
+                                        || tokenAnterior == Constants.NUMERO || tokenAnterior == Constants.DELIMITADOR) {
                                     token = adicionarToken(token, linhas);
                                 }
                                 //Caso contrario, é um possivel numero negativo
