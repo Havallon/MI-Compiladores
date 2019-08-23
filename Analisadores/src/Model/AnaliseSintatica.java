@@ -1,6 +1,7 @@
 
 package Model;
 
+import Model.Semantico.Constante;
 import Model.util.Constants;
 import java.util.ArrayList;
 
@@ -12,14 +13,24 @@ public class AnaliseSintatica {
     private ArrayList<Token> erros;
     private final Primeiros primeiros;
     private Token atual;
+    private ArrayList<Constante> listaConstantes;
     
+    //Variaveis para analise semantica
+    private String tipoConstante;
+    private String nomeConstante;
+    private String valorConstante;
     
     public AnaliseSintatica(){
         primeiros = new Primeiros();
         automatos = new Automatos();
     }
     
+    public ArrayList<Constante> getConstantes(){
+        return this.listaConstantes;
+    }
+    
     public ArrayList<Token> start(ArrayList<Token> tokens){
+        this.listaConstantes = new ArrayList<>();
         this.tokens = tokens;
         tokens.add(new Token(Constants.FIM_PROGRAMA, "$", 0));
         this.erros = new ArrayList<Token>();
@@ -759,6 +770,7 @@ public class AnaliseSintatica {
    
     private void estruturaConstante(){
         if (automatos.isTipo(atual.getLexema())){
+            tipoConstante = atual.getLexema();
             atual = proximoToken();
             constantes();
             if (atual.getLexema().equals(";")){
@@ -777,10 +789,13 @@ public class AnaliseSintatica {
     //Declaração da constante
     private void constantes(){
         if (atual.getTipo() == Constants.IDENTIFICADOR){
+            nomeConstante = atual.getLexema();
             atual = proximoToken();
             if (atual.getLexema().equals("=")){
                 atual = proximoToken();
                 if (atual.getTipo() == Constants.NUMERO || atual.getTipo() == Constants.CADEIA_CARACTERES || automatos.isTipoBoleano(atual.getLexema())){
+                    valorConstante = atual.getLexema();
+                    listaConstantes.add(new Constante(tipoConstante, nomeConstante, valorConstante,atual.getLinha()));
                     atual = proximoToken();
                     multiplasConstantes();
                 }else {

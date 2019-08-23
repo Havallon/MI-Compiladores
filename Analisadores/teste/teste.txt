@@ -1,0 +1,9 @@
+programa{
+	constantes{
+		inteiro a = 1;
+		real b = 2.2;
+		boleano c = falso;
+		texto d = "ok";
+		//vazio t = "ok";
+	}
+}

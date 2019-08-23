@@ -2,7 +2,9 @@
 package Controller;
 
 import Model.AnaliseLexica;
+import Model.AnaliseSemantica;
 import Model.AnaliseSintatica;
+import Model.Semantico.Constante;
 import Model.Token;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -19,10 +21,12 @@ public class Controller {
     
     private AnaliseLexica lexica;
     private AnaliseSintatica parser;
+    private AnaliseSemantica semantico;
     
     public Controller(){
         lexica = new AnaliseLexica();
         parser = new AnaliseSintatica();
+        semantico = new AnaliseSemantica();
     }
     
     //Metodo inicial
@@ -73,12 +77,43 @@ public class Controller {
                     escrita.close();
                     System.out.println("Arquivo: " + a[1] + ".txt contem erro sintatico");
                 } else{
+                    System.out.println("Arquivo: " + a[1] + ".txt foi analisado sintaticamente");
                     FileWriter escrita = new FileWriter("./teste/"+a[1]+".saida");
                     PrintWriter gravar = new PrintWriter(escrita);
-                    gravar.println("SUCESSO");
+                    boolean sucesso = true;
+                    
+                    ArrayList<Constante> cts = semantico.verificarConstantesIguais(parser.getConstantes());
+                    if (!cts.isEmpty()){
+                        sucesso = false;
+                    }
+                    for (Constante c : cts){
+                        gravar.println("Linha: " + c.getLinha() + " - O nome da constante '" + c.getNome() + "' ja esta em uso");
+                    }
+                    
+                    
+                    cts = semantico.verificarConstanteVazias(parser.getConstantes());
+                    if (!cts.isEmpty()){
+                        sucesso = false;
+                    }
+                    for (Constante c : cts){
+                        gravar.println("Linha: " + c.getLinha() + " - Nao e permitido declarar constantes com do tipo 'vazio'");
+                    }
+                    
+                    cts = semantico.verificarTipoConstante(parser.getConstantes());
+                    if (!cts.isEmpty()){
+                        sucesso = false;
+                    }
+                    for (Constante c : cts){
+                        gravar.println("Linha: " + c.getLinha() + " - Constante '" + c.getNome() + "' esta recebendo um valor incompativel com sua tipagem");
+                    }
+                    
+                    if (sucesso){
+                        gravar.println("SUCESSO");
+                    }
+                    
+                    System.out.println("Arquivo: " + a[1] + ".txt foi analisado semanticamente");
                     gravar.close();
                     escrita.close();
-                    System.out.println("Arquivo: " + a[1] + ".txt foi analisado sintaticamente");
                 }
             }else{
                 FileWriter escrita = new FileWriter("./teste/"+a[1]+".saida");

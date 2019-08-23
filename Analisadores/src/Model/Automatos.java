@@ -78,6 +78,10 @@ public class Automatos {
         return lexema.matches(tipo);
     }
     
+    public String getCadeia(){
+        return this.cadeia;
+    }
+    
     public boolean isTipoBoleano(String lexema){
         return lexema.matches(tipoBoleano);
     }
