@@ -39,6 +39,7 @@ public class Constante {
         } else return false;
     }
     
+    
     @Override
     public String toString(){
         return "Linha: " + linha + " -> " + tipo + " " + nome + " = " + valor;

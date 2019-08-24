@@ -4,6 +4,13 @@ programa{
 		real b = 2.2;
 		boleano c = falso;
 		texto d = "ok";
-		//vazio t = "ok";
+	}
+
+	metodo principal():vazio{
+
+	}
+
+	metodo soma(inteiro e, real f):vazio{
+	
 	}
 }

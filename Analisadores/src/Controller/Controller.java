@@ -4,7 +4,6 @@ package Controller;
 import Model.AnaliseLexica;
 import Model.AnaliseSemantica;
 import Model.AnaliseSintatica;
-import Model.Semantico.Constante;
 import Model.Token;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -82,34 +81,8 @@ public class Controller {
                     PrintWriter gravar = new PrintWriter(escrita);
                     boolean sucesso = true;
                     
-                    ArrayList<Constante> cts = semantico.verificarConstantesIguais(parser.getConstantes());
-                    if (!cts.isEmpty()){
-                        sucesso = false;
-                    }
-                    for (Constante c : cts){
-                        gravar.println("Linha: " + c.getLinha() + " - O nome da constante '" + c.getNome() + "' ja esta em uso");
-                    }
-                    
-                    
-                    cts = semantico.verificarConstanteVazias(parser.getConstantes());
-                    if (!cts.isEmpty()){
-                        sucesso = false;
-                    }
-                    for (Constante c : cts){
-                        gravar.println("Linha: " + c.getLinha() + " - Nao e permitido declarar constantes com do tipo 'vazio'");
-                    }
-                    
-                    cts = semantico.verificarTipoConstante(parser.getConstantes());
-                    if (!cts.isEmpty()){
-                        sucesso = false;
-                    }
-                    for (Constante c : cts){
-                        gravar.println("Linha: " + c.getLinha() + " - Constante '" + c.getNome() + "' esta recebendo um valor incompativel com sua tipagem");
-                    }
-                    
-                    if (sucesso){
-                        gravar.println("SUCESSO");
-                    }
+                    semantico.verificarConstantes(parser.getConstantes(), gravar);
+                    semantico.verificarMetodo(parser.getMetodos(), gravar, parser.getConstantes());
                     
                     System.out.println("Arquivo: " + a[1] + ".txt foi analisado semanticamente");
                     gravar.close();

@@ -2,6 +2,8 @@
 package Model;
 
 import Model.Semantico.Constante;
+import Model.Semantico.Metodo;
+import Model.Semantico.Variavel;
 import Model.util.Constants;
 import java.util.ArrayList;
 
@@ -14,11 +16,17 @@ public class AnaliseSintatica {
     private final Primeiros primeiros;
     private Token atual;
     private ArrayList<Constante> listaConstantes;
+    private ArrayList<Metodo> listaMetodos;
     
-    //Variaveis para analise semantica
+    //Variaveis para analise semantica das constantes
     private String tipoConstante;
     private String nomeConstante;
     private String valorConstante;
+    
+    //Variaveis para analise semantica dos metodos
+    private String nomeMetodo;
+    private String retornoMetodo;
+    private ArrayList<Variavel> paramMetodos;
     
     public AnaliseSintatica(){
         primeiros = new Primeiros();
@@ -29,8 +37,14 @@ public class AnaliseSintatica {
         return this.listaConstantes;
     }
     
+    public ArrayList<Metodo> getMetodos(){
+        return this.listaMetodos;
+    }
+    
     public ArrayList<Token> start(ArrayList<Token> tokens){
         this.listaConstantes = new ArrayList<>();
+        this.listaMetodos = new ArrayList<>();
+        
         this.tokens = tokens;
         tokens.add(new Token(Constants.FIM_PROGRAMA, "$", 0));
         this.erros = new ArrayList<Token>();
@@ -84,8 +98,11 @@ public class AnaliseSintatica {
     }
     
     private void metodo(){
+        int linhaM = atual.getLinha();
+        this.paramMetodos = new ArrayList<>();
         atual = proximoToken();
         if (atual.getTipo() == Constants.IDENTIFICADOR || atual.getLexema().equals("principal")){
+            nomeMetodo = atual.getLexema();
             atual = proximoToken();
             if (atual.getLexema().equals("(")){
                 atual = proximoToken();
@@ -95,6 +112,7 @@ public class AnaliseSintatica {
                     if (atual.getLexema().equals(":")){
                         atual = proximoToken();
                         if (automatos.isTipo(atual.getLexema())){
+                            retornoMetodo = atual.getLexema();
                             atual = proximoToken();
                             if (atual.getLexema().equals("{")){
                                 atual = proximoToken();
@@ -102,6 +120,7 @@ public class AnaliseSintatica {
                                 escopoMetodo();
                                 if (atual.getLexema().equals("}")){
                                     atual = proximoToken();
+                                    listaMetodos.add(new Metodo(nomeMetodo, retornoMetodo,linhaM, paramMetodos));
                                 }else{
                                     erro("Esta faltado } para finalizar o bloco do metodo");
                                 }
@@ -725,9 +744,14 @@ public class AnaliseSintatica {
     }
     
     private void listaParametros(boolean blank){
+        String tipagem;
+        String nomeParam;
         if (automatos.isTipo(atual.getLexema())){
+            tipagem = atual.getLexema();
             atual = proximoToken();
             if (atual.getTipo() == Constants.IDENTIFICADOR){
+                nomeParam = atual.getLexema();
+                paramMetodos.add(new Variavel(nomeParam, tipagem, atual.getLinha()));
                 atual = proximoToken();
                 maisParametros();
             } else {
