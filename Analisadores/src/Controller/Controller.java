@@ -4,6 +4,7 @@ package Controller;
 import Model.AnaliseLexica;
 import Model.AnaliseSemantica;
 import Model.AnaliseSintatica;
+import Model.Semantico.ErroSemantico;
 import Model.Token;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -13,6 +14,8 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 
 
@@ -54,6 +57,7 @@ public class Controller {
         for (String[] a : arqs){
             FileReader arq = new FileReader(a[0]);
             //Realizando a analise lexica no arquivo
+            semantico.reset();
             lexica.analisar(arq);
             ArrayList<Token> tokens = lexica.getTokens();
             /*
@@ -79,10 +83,20 @@ public class Controller {
                     System.out.println("Arquivo: " + a[1] + ".txt foi analisado sintaticamente");
                     FileWriter escrita = new FileWriter("./teste/"+a[1]+".saida");
                     PrintWriter gravar = new PrintWriter(escrita);
-                    boolean sucesso = true;
                     
-                    semantico.verificarConstantes(parser.getConstantes(), gravar);
-                    semantico.verificarMetodo(parser.getMetodos(), gravar, parser.getConstantes());
+                    semantico.verificarConstantes(parser.getConstantes());
+                    semantico.verificarMetodo(parser.getMetodos(), parser.getConstantes());
+                    
+                    ArrayList<ErroSemantico> erroSemantico = semantico.getErros();
+                    
+                    if (erroSemantico.isEmpty()){
+                        gravar.println("SUCESSO");
+                    }else{
+                        Collections.sort(erroSemantico);
+                        for (ErroSemantico er : erroSemantico){
+                            gravar.println(er.getMsg());
+                        }
+                    }
                     
                     System.out.println("Arquivo: " + a[1] + ".txt foi analisado semanticamente");
                     gravar.close();

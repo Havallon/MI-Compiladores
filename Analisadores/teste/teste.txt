@@ -1,16 +1,19 @@
 programa{
 	constantes{
 		inteiro a = 1;
-		real b = 2.2;
+		real b = 2.0;
 		boleano c = falso;
 		texto d = "ok";
 	}
 
 	metodo principal():vazio{
-
+		
 	}
 
-	metodo soma(inteiro e, real f):vazio{
-	
+	metodo soma(texto e, real f):vazio{
+		variaveis{
+			inteiro g;
+			real h;
+		}
 	}
 }

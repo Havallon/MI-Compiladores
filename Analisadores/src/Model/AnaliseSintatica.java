@@ -24,9 +24,13 @@ public class AnaliseSintatica {
     private String valorConstante;
     
     //Variaveis para analise semantica dos metodos
-    private String nomeMetodo;
-    private String retornoMetodo;
     private ArrayList<Variavel> paramMetodos;
+    private ArrayList<Variavel> varMetodos;
+    private Metodo metodo;
+    
+    //variaveis para analise semantica de variaveis
+    private String tipoVar;
+    private String nomeVar;
     
     public AnaliseSintatica(){
         primeiros = new Primeiros();
@@ -98,11 +102,13 @@ public class AnaliseSintatica {
     }
     
     private void metodo(){
-        int linhaM = atual.getLinha();
+        metodo = new Metodo();
+        metodo.setLinha(atual.getLinha());
         this.paramMetodos = new ArrayList<>();
+        this.varMetodos = new ArrayList<>();
         atual = proximoToken();
         if (atual.getTipo() == Constants.IDENTIFICADOR || atual.getLexema().equals("principal")){
-            nomeMetodo = atual.getLexema();
+            metodo.setNome(atual.getLexema());
             atual = proximoToken();
             if (atual.getLexema().equals("(")){
                 atual = proximoToken();
@@ -112,7 +118,7 @@ public class AnaliseSintatica {
                     if (atual.getLexema().equals(":")){
                         atual = proximoToken();
                         if (automatos.isTipo(atual.getLexema())){
-                            retornoMetodo = atual.getLexema();
+                            metodo.setRetorno(atual.getLexema());
                             atual = proximoToken();
                             if (atual.getLexema().equals("{")){
                                 atual = proximoToken();
@@ -120,7 +126,9 @@ public class AnaliseSintatica {
                                 escopoMetodo();
                                 if (atual.getLexema().equals("}")){
                                     atual = proximoToken();
-                                    listaMetodos.add(new Metodo(nomeMetodo, retornoMetodo,linhaM, paramMetodos));
+                                    metodo.setParametros(paramMetodos);
+                                    metodo.setVariaveis(varMetodos);
+                                    listaMetodos.add(metodo);
                                 }else{
                                     erro("Esta faltado } para finalizar o bloco do metodo");
                                 }
@@ -706,6 +714,7 @@ public class AnaliseSintatica {
     
     private void varV(){
         if (automatos.isTipo(atual.getLexema())){
+            tipoVar = atual.getLexema();
             atual = proximoToken();
             complementoV();
             maisVariaveis();
@@ -716,6 +725,8 @@ public class AnaliseSintatica {
     
     private void complementoV(){
         if (atual.getTipo() == Constants.IDENTIFICADOR){
+            nomeVar = atual.getLexema();
+            varMetodos.add(new Variavel(nomeVar, tipoVar, atual.getLinha()));
             atual = proximoToken();
             vetor();
             variavelMesmoTipo();

@@ -3,16 +3,40 @@ package Model.Semantico;
 import java.util.ArrayList;
 
 public class Metodo {
-    private final String nome;
-    private final String retorno;
-    private final int linha;
-    private final ArrayList<Variavel> parametros;
+    private  String nome;
+    private  String retorno;
+    private  int linha;
+
+    private ArrayList<Variavel> parametros;
+    private ArrayList<Variavel> variaveis;
+
     
-    public Metodo(String nome, String retorno, int linha, ArrayList<Variavel> parametros){
+    
+    public Metodo() {
+    }
+        
+    public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    public ArrayList<Variavel> getVariaveis() {
+        return variaveis;
+    }
+
+    public void setVariaveis(ArrayList<Variavel> variaveis) {
+        this.variaveis = variaveis;
+    }
+    
+    public void setRetorno(String retorno) {
         this.retorno = retorno;
+    }
+
+    public void setLinha(int linha) {
         this.linha = linha;
-        this.parametros = (ArrayList<Variavel>) parametros.clone();
+    }
+
+    public void setParametros(ArrayList<Variavel> parametros) {
+        this.parametros = parametros;
     }
     
     public ArrayList<Variavel> getParametros(){
