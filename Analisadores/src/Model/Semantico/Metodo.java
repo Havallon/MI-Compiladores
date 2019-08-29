@@ -9,12 +9,21 @@ public class Metodo {
 
     private ArrayList<Variavel> parametros;
     private ArrayList<Variavel> variaveis;
+    private ArrayList<Comando> comandos;
 
     
-    
     public Metodo() {
+        comandos =  new ArrayList<>();
     }
-        
+    
+    public ArrayList<Comando> getComandos() {
+        return comandos;
+    }
+
+    public void setComandos(ArrayList<Comando> comandos) {
+        this.comandos = comandos;
+    }
+    
     public void setNome(String nome) {
         this.nome = nome;
     }

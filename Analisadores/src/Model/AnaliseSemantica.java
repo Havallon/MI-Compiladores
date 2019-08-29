@@ -1,6 +1,7 @@
 
 package Model;
 
+import Model.Semantico.Comando;
 import Model.Semantico.Constante;
 import Model.Semantico.ErroSemantico;
 import Model.Semantico.Metodo;
@@ -30,7 +31,78 @@ public class AnaliseSemantica {
     public void verificarMetodo(ArrayList<Metodo> lista, ArrayList<Constante> ctes){
         verificarMetodoPrincipal(lista);
         verificarMetodoParam(lista, ctes);
+        verificarSobrescrita(lista);
         verificarVar(lista, ctes);
+        verificarComandos(lista,ctes);
+    }
+    
+    private void verificarComandos(ArrayList<Metodo> lista, ArrayList<Constante> ctes){
+        for (Metodo m : lista){
+            for (Comando cmd : m.getComandos()){
+                if (cmd.getTipo().equals("incremento")){
+                    for (Constante c : ctes){
+                        if (cmd.getId().equals(c.getNome())){
+                            erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - não pode fazer incremento em uma constante"));
+                        }
+                    }
+                    
+                    boolean exist = false;
+                    for (Variavel p : m.getParametros()){
+                        if (cmd.getId().equals(p.getNome())){
+                            exist = true;
+                            if (p.getTipo().equals("texto") || p.getTipo().equals("boleano")){
+                                erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Só é permitido incremento em variaveis do tipo inteiro ou real"));
+                            }
+                        }
+                    }
+                    
+                    for (Variavel v : m.getVariaveis()){
+                        if (cmd.getId().equals(v.getNome())){
+                            exist = true;
+                            if (v.getTipo().equals("texto") || v.getTipo().equals("boleano")){
+                                erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Só é permitido incremento em variaveis do tipo inteiro ou real"));
+                            }
+                        }
+                    }
+                    
+                    if (!exist){
+                        erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - A variavel '" + cmd.getId() + "' nao foi declarada"));
+                    }
+                }
+            }
+        }
+    }
+    
+    private void verificarSobrescrita(ArrayList<Metodo> lista){
+        Metodo m;
+        ArrayList<Metodo> clone = (ArrayList<Metodo>) lista.clone();
+        while(!clone.isEmpty()){
+            m = clone.remove(0);
+            for (Metodo aux : clone){
+                if (m.getNome().equals(aux.getNome())){
+                    if (m.getRetorno().equals(aux.getRetorno())){
+                        if (m.getParametros().size() == aux.getParametros().size()){
+                            if (m.getParametros().size() > 0){
+                                boolean same = false;
+                                for (int i = 0; i < m.getParametros().size(); i++){
+                                    if (m.getParametros().get(i).getTipo().equals(aux.getParametros().get(i).getTipo())){
+                                        same = true;
+                                    } else {
+                                        same = false;
+                                        i = m.getParametros().size();
+                                    }
+                                }
+                                if (same){
+                                        erros.add(new ErroSemantico(aux.getLinha(), "Linha: " + aux.getLinha() + " - Não é permitido a sobrescrita do metodo '"+ aux.getNome()+"'"));
+                                }
+                            }else{
+                                erros.add(new ErroSemantico(aux.getLinha(), "Linha: " + aux.getLinha() + " - Não é permitido a sobrescrita do metodo '"+ aux.getNome()+"'"));
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
     
     private void verificarVar(ArrayList<Metodo> lista, ArrayList<Constante> ctes){
@@ -100,10 +172,11 @@ public class AnaliseSemantica {
                 if (!m.getParametros().isEmpty()){
                     erros.add(new ErroSemantico(m.getLinha(), "Linha: " + m.getLinha() + " - O método principal não pode ter parametros"));
                 }
+                if (quantidade > 1){
+                    erros.add(new ErroSemantico(m.getLinha(),"Linha: " + m.getLinha() + " - O método principal já foi declarado"));
+                }
             }
-            if (quantidade > 1){
-                erros.add(new ErroSemantico(m.getLinha(),"Linha: " + m.getLinha() + " - O método principal já foi declarado"));
-            }
+            
         }
         if (quantidade == 0){
             erros.add(new ErroSemantico(0,"Está faltando o método principal"));

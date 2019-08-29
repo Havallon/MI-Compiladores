@@ -5,15 +5,12 @@ programa{
 		boleano c = falso;
 		texto d = "ok";
 	}
+	
+	metodo principal():vazio{}	
 
-	metodo principal():vazio{
-		
-	}
-
-	metodo soma(texto e, real f):vazio{
-		variaveis{
-			inteiro g;
-			real h;
-		}
+	metodo sok(real x):vazio{
+		variaveis{inteiro j;}
+		x++;
+		j++;
 	}
 }

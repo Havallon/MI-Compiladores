@@ -94,6 +94,7 @@ public class Controller {
                     }else{
                         Collections.sort(erroSemantico);
                         for (ErroSemantico er : erroSemantico){
+                            System.out.println(er.getMsg());
                             gravar.println(er.getMsg());
                         }
                     }

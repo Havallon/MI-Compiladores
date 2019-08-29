@@ -1,6 +1,7 @@
 
 package Model;
 
+import Model.Semantico.Comando;
 import Model.Semantico.Constante;
 import Model.Semantico.Metodo;
 import Model.Semantico.Variavel;
@@ -31,6 +32,10 @@ public class AnaliseSintatica {
     //variaveis para analise semantica de variaveis
     private String tipoVar;
     private String nomeVar;
+    
+    
+    //Variaveis para analise Semantica de comandos
+    private Comando cmd;
     
     public AnaliseSintatica(){
         primeiros = new Primeiros();
@@ -158,6 +163,9 @@ public class AnaliseSintatica {
     
     private void incrementador(){
         if (atual.getLexema().equals("++") || atual.getLexema().equals("--")){
+            cmd.setTipo("incremento");
+            cmd.setLinha(atual.getLinha());
+            metodo.getComandos().add(cmd);
             atual = proximoToken();
             if (atual.getLexema().equals(";")){
                     atual = proximoToken();
@@ -171,6 +179,7 @@ public class AnaliseSintatica {
     
     private void comandos(){
         if (primeiros.comandos(atual)){
+            cmd = new Comando();
             if (atual.getLexema().equals("leia")){
                 atual = proximoToken();
                 leia();
@@ -192,6 +201,7 @@ public class AnaliseSintatica {
                 resultado();
             }
             else if (atual.getTipo() == Constants.IDENTIFICADOR){
+                cmd.setId(atual.getLexema());
                 atual = proximoToken();
                 qlComando();
             }
