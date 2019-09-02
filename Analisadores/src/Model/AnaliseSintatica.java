@@ -32,7 +32,8 @@ public class AnaliseSintatica {
     //variaveis para analise semantica de variaveis
     private String tipoVar;
     private String nomeVar;
-    
+    private boolean vetorVar;
+    private boolean matrizVar;
     
     //Variaveis para analise Semantica de comandos
     private Comando cmd;
@@ -165,7 +166,11 @@ public class AnaliseSintatica {
         if (atual.getLexema().equals("++") || atual.getLexema().equals("--")){
             cmd.setTipo("incremento");
             cmd.setLinha(atual.getLinha());
+            cmd.setVetor(vetorVar);
+            cmd.setMatriz(matrizVar);
             metodo.getComandos().add(cmd);
+            matrizVar = false;
+            vetorVar = false;
             atual = proximoToken();
             if (atual.getLexema().equals(";")){
                     atual = proximoToken();
@@ -669,6 +674,7 @@ public class AnaliseSintatica {
             opIndice();
             if (atual.getLexema().equals("]")){
                 atual = proximoToken();
+                matrizVar = true;
             } else {
                 erro("Esta faltando ']' na utilizacao da matriz");
             }
@@ -682,6 +688,7 @@ public class AnaliseSintatica {
             opIndice();
             if (atual.getLexema().equals("]")){
                 atual = proximoToken();
+                vetorVar = true;
                 matriz();
             }else{
                 erro("Esta faltando ']' na utilizacao do vetor");
@@ -736,9 +743,12 @@ public class AnaliseSintatica {
     private void complementoV(){
         if (atual.getTipo() == Constants.IDENTIFICADOR){
             nomeVar = atual.getLexema();
-            varMetodos.add(new Variavel(nomeVar, tipoVar, atual.getLinha()));
+            int linhaV = atual.getLinha();
             atual = proximoToken();
             vetor();
+            varMetodos.add(new Variavel(nomeVar, tipoVar, linhaV,vetorVar,matrizVar));
+            vetorVar = false;
+            matrizVar = false;
             variavelMesmoTipo();
         } else {
             erro("Esta faltando a variavel a ser declarada");
@@ -772,7 +782,7 @@ public class AnaliseSintatica {
             atual = proximoToken();
             if (atual.getTipo() == Constants.IDENTIFICADOR){
                 nomeParam = atual.getLexema();
-                paramMetodos.add(new Variavel(nomeParam, tipagem, atual.getLinha()));
+                paramMetodos.add(new Variavel(nomeParam, tipagem, atual.getLinha(),false,false));
                 atual = proximoToken();
                 maisParametros();
             } else {

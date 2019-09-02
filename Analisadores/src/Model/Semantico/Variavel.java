@@ -4,11 +4,23 @@ public class Variavel {
     private final String nome;
     private final String tipo;
     private final int linha;
+    private final boolean vetor;
+    private final boolean matriz;
     
-    public Variavel(String nome, String tipo, int linha) {
+    public Variavel(String nome, String tipo, int linha, boolean vetor, boolean matriz) {
         this.nome = nome;
         this.tipo = tipo;
         this.linha = linha;
+        this.vetor = vetor;
+        this.matriz = matriz;
+    }
+
+    public boolean isVetor() {
+        return vetor;
+    }
+
+    public boolean isMatriz() {
+        return matriz;
     }
 
     public String getNome() {
