@@ -31,9 +31,26 @@ public class AnaliseSemantica {
         verificarMetodoParam(lista, ctes);
         verificarSobrescrita(lista);
         verificarVar(lista, ctes);
+        verificarRetorno(lista);
         verificarComandos(lista, ctes);
     }
-
+    
+    private void verificarRetorno(ArrayList<Metodo> lista){
+        for (Metodo m : lista){
+            boolean exist = false;
+            if (!m.getRetorno().equals("vazio")){
+                for (Comando cmd : m.getComandos()){
+                    if (cmd.getTipo().equals("resultado")){
+                        exist = true;
+                    }
+                }
+                if (!exist){
+                    erros.add(new ErroSemantico(m.getLinha(), "Linha: " + m.getLinha() + " - Metodo '" + m.getNome() + "' sem retorno"));
+                }
+            }
+        }
+    }
+    
     private void verificarComandos(ArrayList<Metodo> lista, ArrayList<Constante> ctes) {
         for (Metodo m : lista) {
             for (Comando cmd : m.getComandos()) {

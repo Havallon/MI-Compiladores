@@ -8,9 +8,10 @@ programa{
 	
 	metodo principal():vazio{}	
 
-	metodo sok(real x):vazio{
+	metodo sok(real x):inteiro{
 		variaveis{inteiro j;}
 		x++;
 		j++;
+		resultado;
 	}
 }

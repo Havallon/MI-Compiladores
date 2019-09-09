@@ -203,6 +203,8 @@ public class AnaliseSintatica {
             }
             else if (atual.getLexema().equals("resultado")){
                 atual = proximoToken();
+                cmd.setTipo("resultado");
+                metodo.getComandos().add(cmd);
                 resultado();
             }
             else if (atual.getTipo() == Constants.IDENTIFICADOR){
