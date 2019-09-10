@@ -8,10 +8,11 @@ programa{
 	
 	metodo principal():vazio{}	
 
-	metodo sok(real x):inteiro{
+	metodo sok(inteiro x,real y, inteiro z):vazio{
 		variaveis{inteiro j;}
-		x++;
-		j++;
-		resultado;
+		soma(a());
+	}
+
+	metodo soma(inteiro a1):vazio{
 	}
 }

@@ -1,16 +1,23 @@
 package Model.Semantico;
 
+import java.util.ArrayList;
+
 public class Comando {
     private String tipo;
     private String id;
     private boolean vetor;
     private boolean matriz;
-    
+    private ArrayList<Comando> param;
     private int Linha;
     
     public Comando() {
+        param = new ArrayList<>();
     }
 
+    public ArrayList<Comando> getParam() {
+        return param;
+    }
+        
     public int getLinha() {
         return Linha;
     }

@@ -51,6 +51,7 @@ public class AnaliseSemantica {
         }
     }
     
+
     private void verificarComandos(ArrayList<Metodo> lista, ArrayList<Constante> ctes) {
         for (Metodo m : lista) {
             for (Comando cmd : m.getComandos()) {
@@ -90,6 +91,83 @@ public class AnaliseSemantica {
                         erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - A variavel '" + cmd.getId() + "' nao foi declarada"));
                     }
                     verificarVetores(vetor, matriz, cmd);
+                } 
+                else if (cmd.getTipo().equals("chamada")){
+                    boolean exist = false;
+                    for (Metodo met : lista){
+                        if (met.getNome().equals(cmd.getId())){
+                            if (met.getParametros().size() == cmd.getParam().size()){
+                                exist = true;
+                                for (int j = 0; j < met.getParametros().size(); j++){
+                                    if (cmd.getParam().get(j).getTipo().equals("imediato")){
+                                        switch (met.getParametros().get(j).getTipo()) {
+                                            case "inteiro":
+                                                try {
+                                                    int i = Integer.parseInt(cmd.getParam().get(j).getId());
+                                                } catch (Exception ex) {
+                                                    erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Valor '" + cmd.getParam().get(j).getId() + "' não é do tipo " + met.getParametros().get(j).getTipo()));
+                                                }
+                                                break;
+                                            case "real":
+                                                try {
+                                                    float i = Float.parseFloat(cmd.getParam().get(j).getId());
+                                                } catch (Exception ex) {
+                                                    erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Valor '" + cmd.getParam().get(j).getId() + "' não é do tipo " + met.getParametros().get(j).getTipo()));
+                                                }
+                                                break;
+                                            case "boleano":
+                                                if (!automatos.isTipoBoleano(cmd.getParam().get(j).getId())) {
+                                                    erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Valor '" + cmd.getParam().get(j).getId() + "' não é do tipo " + met.getParametros().get(j).getTipo()));
+                                                }
+                                                break;
+                                            case "texto":
+                                                if (!cmd.getParam().get(j).getId().matches("\"(.)*\"")) {
+                                                    erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Valor '" + cmd.getParam().get(j).getId() + "' não é do tipo " + met.getParametros().get(j).getTipo()));
+                                                }
+                                                break;
+                                        }
+                                    } else if (cmd.getParam().get(j).getTipo().equals("var")){
+                                        boolean aux = false;
+                                       for (Constante c : ctes){
+                                            if (c.getNome().equals(cmd.getParam().get(j).getId())){
+                                                aux = true;
+                                                if (!c.getTipo().equals(met.getParametros().get(j).getTipo())){
+                                                   erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Constante '" + c.getNome() + "' não é do tipo " + met.getParametros().get(j).getTipo()));
+                                                }
+                                            }
+                                        }
+                                       if (!aux){
+                                           for (Variavel v : m.getParametros()){
+                                               if (v.getNome().equals(cmd.getParam().get(j).getId())){
+                                                   aux = true;
+                                                   verificarVetores(v.isVetor(),v.isMatriz(),cmd.getParam().get(j));
+                                                   if (!v.getTipo().equals(met.getParametros().get(j).getTipo())){
+                                                       erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Variavel '" + v.getNome() + "' não é do tipo " + met.getParametros().get(j).getTipo()));
+                                                   }
+                                               }
+                                           }
+                                           if (!aux){
+                                               for (Variavel v : m.getVariaveis()){
+                                                   if (v.getNome().equals(cmd.getParam().get(j).getId())){
+                                                        aux = true;
+                                                        verificarVetores(v.isVetor(),v.isMatriz(),cmd.getParam().get(j));
+                                                        if (!v.getTipo().equals(met.getParametros().get(j).getTipo())){
+                                                            erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Variavel '" + v.getNome() + "' não é do tipo " + met.getParametros().get(j).getTipo()));
+                                                        }
+                                                   }
+                                               }
+                                               
+                                               if (!aux){
+                                                   erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Variavel '" + cmd.getParam().get(j).getId() + "' nao existe"));
+                                               }
+                                           }
+                                       }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
                 }
             }
         }

@@ -297,6 +297,7 @@ public class AnaliseSintatica {
     private void qlComando(){
         if (atual.getLexema().equals("(")){
             atual = proximoToken();
+            cmd.setTipo("chamada");
             chamadaDeMetodos();
             if (atual.getLexema().equals(";")){
                 atual = proximoToken();
@@ -310,7 +311,17 @@ public class AnaliseSintatica {
     }
     
     private void chamadaDeMetodos(){
+        if (cmd != null){
+            cmd.getParam().clear();
+        }
         var(true);
+        if (cmd != null){
+            if (cmd.getTipo().equals("chamada")){
+                cmd.setLinha(atual.getLinha());
+                metodo.getComandos().add(cmd);
+                
+            }
+        }
         if (atual.getLexema().equals(")")){
             atual = proximoToken();
 
@@ -322,11 +333,18 @@ public class AnaliseSintatica {
     private void var(boolean blank){
         if (atual.getTipo() == Constants.NUMERO || atual.getTipo() == Constants.CADEIA_CARACTERES
                 || automatos.isTipoBoleano(atual.getLexema())){
+            Comando cmd2 = new Comando();
+            cmd2.setId(atual.getLexema());
+            cmd2.setTipo("imediato");
+            cmd.getParam().add(cmd2);
             atual = proximoToken();
             maisVariavel();
         } else if (atual.getTipo() == Constants.IDENTIFICADOR){
+            Comando cmd2 = new Comando();
+            cmd2.setId(atual.getLexema());
             atual = proximoToken();
             if (atual.getLexema().equals("(")){
+                cmd2.setTipo("met");
                 atual = proximoToken();
                 var(true);
                 if (atual.getLexema().equals(")")){
@@ -336,9 +354,16 @@ public class AnaliseSintatica {
                     erro("Faltando ')' na chamada de metodo");
                 }
             } else{
+                cmd2.setTipo("var");
                 vetor();
                 maisVariavel();
             }
+            cmd2.setVetor(vetorVar);
+            cmd2.setMatriz(matrizVar);
+            cmd.getParam().add(cmd2);
+            vetorVar = false;
+            matrizVar = false;
+            
         } else {
             if (!blank){
                 erro("Ta faltando mais parametros");
