@@ -162,12 +162,104 @@ public class AnaliseSemantica {
                                                }
                                            }
                                        }
+                                    } else if (cmd.getParam().get(j).getTipo().equals("met")){
+                                        System.out.println("ok");
                                     }
                                 }
                             }
                         }
                     }
-                    
+                    if (!exist){
+                        erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Metodo '" + cmd.getId() + "' nao existe"));
+                    }
+                }
+                else if (cmd.getTipo().equals("atribuicao")){
+                    String nome = cmd.getId();
+                    String tipo = "";
+                    boolean exist = false;
+                    for (Constante c : ctes){
+                        if (c.getNome().equals(nome)){
+                            exist = true;
+                        }
+                    }
+                    if (exist){
+                        erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Nao pode fazer atribuicao em constante"));
+                    }else{
+                        exist = false;
+                        for (Variavel v : m.getParametros()){
+                            if (v.getNome().equals(nome)){
+                                exist = true;
+                                tipo = v.getTipo();
+                            }
+                        }
+                        if (!exist){
+                            for (Variavel v : m.getVariaveis()){
+                                if (v.getNome().equals(nome)){
+                                    exist = true;
+                                    verificarVetores(v.isVetor(), v.isMatriz(), cmd);
+                                    tipo = v.getTipo();
+                                }
+                            }
+                            if (!exist){
+                                erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Variavel '" + cmd.getId() + "' nao existe"));
+                            }
+                        }
+                        if (exist){
+                            for (Comando c : cmd.getParam()){
+                                if (!c.getTipo().equals(tipo)){
+                                    if (c.getTipo().equals("inc") || c.getTipo().equals("inc2")){
+                                        boolean e = false;
+                                        for (Constante cte : ctes){
+                                            if (cte.getNome().equals(c.getId())){
+                                                erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Nao pode fazer atribuicao em constante"));
+                                                e = true;
+                                            }
+                                        }
+                                        
+                                        for (Variavel v : m.getParametros()){
+                                            if (v.getNome().equals(c.getId())){
+                                                e = true;
+                                                if (v.getTipo().equals("texto") || v.getTipo().equals("boleano")){
+                                                    erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Nao pode fazer incrmento em '" + v.getTipo() + "'"));
+                                                }else{
+                                                    if (!v.getTipo().equals(tipo)){
+                                                        erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Só pode haver operando do tipo '" + tipo + "' nessa expressao"));
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        
+                                        for (Variavel v : m.getVariaveis()){
+                                            if (v.getNome().equals(c.getId())){
+                                                e = true;
+                                                verificarVetores(v.isVetor(), v.isMatriz(), c);
+                                                if (v.getTipo().equals("texto") || v.getTipo().equals("boleano")){
+                                                    erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Nao pode fazer incrmento em '" + v.getTipo() + "'"));
+                                                }else{
+                                                    if (!v.getTipo().equals(tipo)){
+                                                        erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Só pode haver operando do tipo '" + tipo + "' nessa expressao"));
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        
+                                        if (!e){
+                                            erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Variavel '" + c.getId() + "' nao existe"));
+                                        }
+                                        
+                                    }else
+                                        erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Só pode haver operando do tipo '" + tipo + "' nessa expressao"));
+                                }
+                            }
+                            if (tipo.equals("texto")){
+                                for (String s : cmd.getOp()){
+                                    if (!s.equals("+")){
+                                        erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - A unica operação com textos permita é a adição"));
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

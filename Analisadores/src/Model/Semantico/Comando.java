@@ -8,10 +8,17 @@ public class Comando {
     private boolean vetor;
     private boolean matriz;
     private ArrayList<Comando> param;
+    private ArrayList<String> op;
+    
     private int Linha;
     
     public Comando() {
         param = new ArrayList<>();
+        op = new ArrayList<>();
+    }
+
+    public ArrayList<String> getOp() {
+        return op;
     }
 
     public ArrayList<Comando> getParam() {

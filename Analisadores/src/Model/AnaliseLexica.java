@@ -174,7 +174,7 @@ public class AnaliseLexica {
                                 olhando os tokens anteriores.
                                 */
                                 else if (tokenAnterior == Constants.IDENTIFICADOR
-                                        || tokenAnterior == Constants.NUMERO || tokenAnterior == Constants.DELIMITADOR) {
+                                        || tokenAnterior == Constants.NUMERO || tokenAnterior == Constants.DELIMITADOR || tokenAnterior == Constants.CADEIA_CARACTERES) {
                                     token = adicionarToken(token, linhas);
                                 }
                                 //Caso contrario, é um possivel numero negativo

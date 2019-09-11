@@ -388,7 +388,14 @@ public class AnaliseSintatica {
     }
     
     private void atribuicaoDeVariavel(){
+        cmd.setVetor(vetorVar);
+        cmd.setMatriz(matrizVar);
+        vetorVar = false;
+        vetorVar = false;
+        cmd.setLinha(atual.getLinha());
         verificaCaso();
+        cmd.setTipo("atribuicao");
+        metodo.getComandos().add(cmd);
         if (atual.getLexema().equals(";")){
             atual = proximoToken();
         }else{
@@ -397,7 +404,9 @@ public class AnaliseSintatica {
     }
     
     private void verificaCaso(){
+        String auxiliar = "";
         if (atual.getTipo() == Constants.IDENTIFICADOR){
+            auxiliar = atual.getLexema();
             atual = proximoToken();
             
             if (atual.getLexema().equals("(")){
@@ -412,6 +421,14 @@ public class AnaliseSintatica {
             }
             vetor();
             if (automatos.isIncrementador(atual.getLexema())){
+                Comando cmd2 = new Comando();
+                cmd2.setId(auxiliar);
+                cmd2.setTipo("inc2");
+                cmd2.setVetor(vetorVar);
+                cmd2.setMatriz(matrizVar);
+                vetorVar = false;
+                matrizVar = false;
+                cmd.getParam().add(cmd2);
                 atual = proximoToken();
             }else if (atual.getTipo() == Constants.OPERADOR_ARITMETICO){
                 colocarToken(atual);
@@ -421,12 +438,24 @@ public class AnaliseSintatica {
         }else if (automatos.isIncrementador(atual.getLexema())){
             atual = proximoToken();
             if (atual.getTipo() == Constants.IDENTIFICADOR){
+                Comando cmd2 =  new Comando();
+                cmd2.setId(atual.getLexema());
+                cmd2.setTipo("inc");
                 atual = proximoToken();
                 vetor();
+                cmd2.setVetor(vetorVar);
+                cmd2.setMatriz(matrizVar);
+                vetorVar = false;
+                matrizVar = false;
+                cmd.getParam().add(cmd2);
             }else{
                 erro("Apos o incremento precisa de uma variavel");
             }
         } else if (automatos.isTipoBoleano(atual.getLexema())){
+            Comando cmd2 = new Comando();
+            cmd2.setId(atual.getLexema());
+            cmd2.setTipo("boleano");
+            cmd.getParam().add(cmd2);
             atual = proximoToken();
         } else if (atual.getTipo() == Constants.NUMERO || atual.getTipo() == Constants.CADEIA_CARACTERES){
             expressao();
@@ -475,6 +504,7 @@ public class AnaliseSintatica {
     
     private void exp2(){
         if (atual.getLexema().equals("+") || atual.getLexema().equals("-")){
+            cmd.getOp().add(atual.getLexema());
             atual = proximoToken();
             multExp();
         }
@@ -494,6 +524,7 @@ public class AnaliseSintatica {
     
     private void mul2(){
         if (atual.getLexema().equals("*") || atual.getLexema().equals("/")){
+            cmd.getOp().add(atual.getLexema());
             atual = proximoToken();
             negate();
         }
@@ -515,6 +546,18 @@ public class AnaliseSintatica {
             }else
                 vetor();
         } else if (atual.getTipo() == Constants.NUMERO || atual.getTipo() == Constants.CADEIA_CARACTERES){
+            Comando cmd2 = new Comando();
+            cmd2.setId(atual.getLexema());
+            if (atual.getLexema().matches("\"(.)*\"")){
+                cmd2.setTipo("texto");
+            }else {
+                if (atual.getLexema().contains(".")){
+                    cmd2.setTipo("real");
+                }else{
+                    cmd2.setTipo("inteiro");
+                }
+            }
+            cmd.getParam().add(cmd2);
             atual = proximoToken();
         } else if (atual.getLexema().equals("(")){
             atual = proximoToken();
@@ -524,7 +567,9 @@ public class AnaliseSintatica {
             } else{
                 erro("Está faltando ')'");
             }
-        } else {
+        }else if (atual.getTipo() == Constants.EXP){
+            atual = proximoToken();
+        }else {
             erro("Erro no valor");
         }
     }
@@ -933,7 +978,7 @@ public class AnaliseSintatica {
     }
     
     private Token colocarToken(){
-        Token t = new Token(Constants.IDENTIFICADOR, "a", atual.getLinha());
+        Token t = new Token(Constants.EXP, "a", atual.getLinha());
         //tokens.add(0, t);
         return t;
     }
