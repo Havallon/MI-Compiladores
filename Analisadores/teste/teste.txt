@@ -1,9 +1,9 @@
 programa{
-	constantes{inteiro a = 2;}
+	constantes{real a = 2;}
 
 	metodo principal():vazio{}
-	metodo principala(inteiro b):vazio{
-		variaveis{inteiro j,x[2];}
-		j = x[2]++;
+	metodo principala(real b):vazio{
+		variaveis{real j,x[2]; inteiro y;}
+		j = a();
 	}	
 }

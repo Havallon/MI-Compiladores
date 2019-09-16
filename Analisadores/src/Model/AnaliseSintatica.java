@@ -434,6 +434,15 @@ public class AnaliseSintatica {
                 colocarToken(atual);
                 atual = colocarToken();
                 expressao();
+            } else{
+                Comando cmd2 = new Comando();
+                cmd2.setId(auxiliar);
+                cmd2.setTipo("id");
+                cmd2.setVetor(vetorVar);
+                cmd2.setMatriz(matrizVar);
+                vetorVar = false;
+                matrizVar = false;
+                cmd.getParam().add(cmd2);
             }
         }else if (automatos.isIncrementador(atual.getLexema())){
             atual = proximoToken();

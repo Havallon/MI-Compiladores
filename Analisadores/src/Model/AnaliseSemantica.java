@@ -181,6 +181,7 @@ public class AnaliseSemantica {
                         if (c.getNome().equals(nome)){
                             exist = true;
                         }
+                        
                     }
                     if (exist){
                         erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Nao pode fazer atribuicao em constante"));
@@ -247,8 +248,44 @@ public class AnaliseSemantica {
                                             erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Variavel '" + c.getId() + "' nao existe"));
                                         }
                                         
-                                    }else
+                                    } else if (c.getTipo().equals("id")){
+                                        boolean e = false;
+                                        for (Constante c2 : ctes){
+                                           if (c2.getNome().equals(c.getId())){
+                                               e = true;
+                                               if (!c2.getTipo().equals(tipo)){
+                                                   erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - A variavel '" + c2.getNome() + "' não é do tipo '" + tipo + "'"));
+                                               }
+                                           } 
+                                        }
+                                        if (!e){
+                                            for (Variavel v2 : m.getParametros()){
+                                                if (v2.getNome().equals(c.getId())){
+                                                    e = true;
+                                                    if (!v2.getTipo().equals(tipo)){
+                                                        erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - A variavel '" + v2.getNome() + "' não é do tipo '" + tipo + "'"));
+                                                    }
+                                                }
+                                            }
+                                            
+                                            if (!e){
+                                                for (Variavel v2 : m.getVariaveis()){
+                                                    if (v2.getNome().equals(c.getId())){
+                                                        e = true;
+                                                        verificarVetores(v2.isVetor(), v2.isMatriz(), c);
+                                                        if (!v2.getTipo().equals(tipo)){
+                                                            erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - A variavel '" + v2.getNome() + "' não é do tipo '" + tipo + "'"));
+                                                        }
+                                                    }
+                                                }
+                                                if (!e){
+                                                    erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Variavel '" + c.getId() + "' nao existe"));
+                                                }
+                                            }
+                                        }
+                                    }else{
                                         erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Só pode haver operando do tipo '" + tipo + "' nessa expressao"));
+                                    }
                                 }
                             }
                             if (tipo.equals("texto")){
@@ -258,6 +295,7 @@ public class AnaliseSemantica {
                                     }
                                 }
                             }
+                            
                         }
                     }
                 }
