@@ -34,7 +34,7 @@ public class AnaliseSintatica {
     private String nomeVar;
     private boolean vetorVar;
     private boolean matrizVar;
-    
+    private ArrayList<String> indice;
     //Variaveis para analise Semantica de comandos
     private Comando cmd;
     
@@ -54,6 +54,7 @@ public class AnaliseSintatica {
     public ArrayList<Token> start(ArrayList<Token> tokens){
         this.listaConstantes = new ArrayList<>();
         this.listaMetodos = new ArrayList<>();
+        this.indice = new ArrayList<>();
         
         this.tokens = tokens;
         tokens.add(new Token(Constants.FIM_PROGRAMA, "$", 0));
@@ -298,7 +299,7 @@ public class AnaliseSintatica {
         if (atual.getLexema().equals("(")){
             atual = proximoToken();
             cmd.setTipo("chamada");
-            chamadaDeMetodos();
+            chamadaDeMetodos(cmd);
             if (atual.getLexema().equals(";")){
                 atual = proximoToken();
             } else{
@@ -310,15 +311,15 @@ public class AnaliseSintatica {
         }
     }
     
-    private void chamadaDeMetodos(){
-        if (cmd != null){
-            cmd.getParam().clear();
+    private void chamadaDeMetodos(Comando comando){
+        if (comando != null){
+            comando.getParam().clear();
         }
-        var(true);
-        if (cmd != null){
-            if (cmd.getTipo().equals("chamada")){
-                cmd.setLinha(atual.getLinha());
-                metodo.getComandos().add(cmd);
+        var(true, comando);
+        if (comando != null){
+            if (comando.getTipo().equals("chamada")){
+                comando.setLinha(atual.getLinha());
+                metodo.getComandos().add(comando);
                 
             }
         }
@@ -330,15 +331,15 @@ public class AnaliseSintatica {
         }
     }
     
-    private void var(boolean blank){
+    private void var(boolean blank, Comando comando){
         if (atual.getTipo() == Constants.NUMERO || atual.getTipo() == Constants.CADEIA_CARACTERES
                 || automatos.isTipoBoleano(atual.getLexema())){
             Comando cmd2 = new Comando();
             cmd2.setId(atual.getLexema());
             cmd2.setTipo("imediato");
-            cmd.getParam().add(cmd2);
+            comando.getParam().add(cmd2);
             atual = proximoToken();
-            maisVariavel();
+            maisVariavel(comando);
         } else if (atual.getTipo() == Constants.IDENTIFICADOR){
             Comando cmd2 = new Comando();
             cmd2.setId(atual.getLexema());
@@ -346,21 +347,21 @@ public class AnaliseSintatica {
             if (atual.getLexema().equals("(")){
                 cmd2.setTipo("met");
                 atual = proximoToken();
-                var(true);
+                var(true, comando);
                 if (atual.getLexema().equals(")")){
                     atual = proximoToken();
-                    maisVariavel(); 
+                    maisVariavel(comando); 
                 } else{
                     erro("Faltando ')' na chamada de metodo");
                 }
             } else{
                 cmd2.setTipo("var");
                 vetor();
-                maisVariavel();
+                maisVariavel(comando);
             }
             cmd2.setVetor(vetorVar);
             cmd2.setMatriz(matrizVar);
-            cmd.getParam().add(cmd2);
+            comando.getParam().add(cmd2);
             vetorVar = false;
             matrizVar = false;
             
@@ -371,10 +372,10 @@ public class AnaliseSintatica {
         }
     }
     
-    private void maisVariavel(){
+    private void maisVariavel(Comando comando){
         if (atual.getLexema().equals(",")){
             atual = proximoToken();
-            var(false);
+            var(false,comando);
         }
     }
     
@@ -411,7 +412,12 @@ public class AnaliseSintatica {
             
             if (atual.getLexema().equals("(")){
                 atual = proximoToken();
-                chamadaDeMetodos();
+                Comando cmd2 = new Comando();
+                cmd2.setTipo("chamada2");
+                chamadaDeMetodos(cmd2);
+                cmd2.setId(auxiliar);
+                cmd2.setTipo("chamada");
+                cmd.getParam().add(cmd2);
                 if (atual.getTipo() == Constants.OPERADOR_ARITMETICO){
                     colocarToken(atual);
                     atual = colocarToken();
@@ -419,9 +425,9 @@ public class AnaliseSintatica {
                 }
                 return;
             }
+            Comando cmd2 = new Comando();
             vetor();
             if (automatos.isIncrementador(atual.getLexema())){
-                Comando cmd2 = new Comando();
                 cmd2.setId(auxiliar);
                 cmd2.setTipo("inc2");
                 cmd2.setVetor(vetorVar);
@@ -435,7 +441,6 @@ public class AnaliseSintatica {
                 atual = colocarToken();
                 expressao();
             } else{
-                Comando cmd2 = new Comando();
                 cmd2.setId(auxiliar);
                 cmd2.setTipo("id");
                 cmd2.setVetor(vetorVar);
@@ -486,8 +491,16 @@ public class AnaliseSintatica {
         else if (atual.getLexema().equals("!")){
             atual = proximoToken();
             if (atual.getTipo() == Constants.IDENTIFICADOR){
+                Comando cmd2 = new Comando();
+                cmd2.setId(atual.getLexema());
+                cmd2.setTipo("negar");
                 atual = proximoToken();
                 vetor();
+                cmd2.setVetor(vetorVar);
+                cmd2.setMatriz(matrizVar);
+                vetorVar = false;
+                matrizVar = false;
+                cmd.getParam().add(cmd2);
             }else if (automatos.isTipoBoleano(atual.getLexema())){
                 atual = proximoToken();
             } else{
@@ -548,10 +561,16 @@ public class AnaliseSintatica {
     
     private void value(){
         if (atual.getTipo() == Constants.IDENTIFICADOR){
+            String aux = atual.getLexema();
             atual = proximoToken();
             if (atual.getLexema().equals("(")){
                 atual = proximoToken();
-                chamadaDeMetodos();
+                Comando cmd2 = new Comando();
+                cmd2.setTipo("chamada2");
+                chamadaDeMetodos(cmd2);
+                cmd2.setId(aux);
+                cmd2.setTipo("chamada");
+                cmd.getParam().add(cmd2);
             }else
                 vetor();
         } else if (atual.getTipo() == Constants.NUMERO || atual.getTipo() == Constants.CADEIA_CARACTERES){

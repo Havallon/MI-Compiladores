@@ -1,9 +1,13 @@
 programa{
-	constantes{real a = 2;}
+	constantes{boleano a = verdadeiro;}
 
 	metodo principal():vazio{}
-	metodo principala(real b):vazio{
-		variaveis{real j,x[2]; inteiro y;}
-		j = a();
+	metodo principala(boleano b):vazio{
+		variaveis{boleano j,x[2]; boleano y;}
+		j = !x[a];
+	}
+	
+	metodo soma(inteiro m):real{
+		resultado;
 	}	
 }
