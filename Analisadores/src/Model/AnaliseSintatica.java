@@ -2,6 +2,7 @@
 package Model;
 
 import Model.Semantico.Comando;
+import Model.Semantico.Condicao;
 import Model.Semantico.Constante;
 import Model.Semantico.Metodo;
 import Model.Semantico.Variavel;
@@ -34,7 +35,10 @@ public class AnaliseSintatica {
     private String nomeVar;
     private boolean vetorVar;
     private boolean matrizVar;
-    private ArrayList<String> indice;
+    private String indice;
+    private String tipoIndice;
+    private String indiceM;
+    private String tipoIndiceM;
     //Variaveis para analise Semantica de comandos
     private Comando cmd;
     
@@ -54,8 +58,10 @@ public class AnaliseSintatica {
     public ArrayList<Token> start(ArrayList<Token> tokens){
         this.listaConstantes = new ArrayList<>();
         this.listaMetodos = new ArrayList<>();
-        this.indice = new ArrayList<>();
-        
+        indice = "";
+        indiceM = "";
+        tipoIndice = "";
+        tipoIndiceM = "";
         this.tokens = tokens;
         tokens.add(new Token(Constants.FIM_PROGRAMA, "$", 0));
         this.erros = new ArrayList<Token>();
@@ -169,6 +175,14 @@ public class AnaliseSintatica {
             cmd.setLinha(atual.getLinha());
             cmd.setVetor(vetorVar);
             cmd.setMatriz(matrizVar);
+            cmd.setIndice(indice);
+            cmd.setIndiceM(indiceM);
+            cmd.setTipoIndice(tipoIndice);
+            cmd.setTipoIndiceM(tipoIndiceM);
+            indice = "";
+            indiceM = "";
+            tipoIndice = "";
+            tipoIndiceM = "";
             metodo.getComandos().add(cmd);
             matrizVar = false;
             vetorVar = false;
@@ -262,6 +276,7 @@ public class AnaliseSintatica {
     }
     
     private void enquanto(){
+        cmd.setLinha(atual.getLinha());
         condSe();
         if (atual.getLexema().equals("{")){
             atual = proximoToken();
@@ -273,7 +288,10 @@ public class AnaliseSintatica {
             }
         } else{
             erro("Está faltando '{' para iniciar o bloco do enquanto");
-        }        
+        }
+        cmd.setTipo("se");
+        cmd.setId("se");
+        metodo.getComandos().add(cmd);        
     }
     
     private void conteudoLaco(){
@@ -361,6 +379,14 @@ public class AnaliseSintatica {
             }
             cmd2.setVetor(vetorVar);
             cmd2.setMatriz(matrizVar);
+            cmd2.setIndice(indice);
+            cmd2.setIndiceM(indiceM);
+            cmd2.setTipoIndice(tipoIndice);
+            cmd2.setTipoIndiceM(tipoIndiceM);
+            indice = "";
+            indiceM = "";
+            tipoIndice = "";
+            tipoIndiceM = "";
             comando.getParam().add(cmd2);
             vetorVar = false;
             matrizVar = false;
@@ -391,6 +417,14 @@ public class AnaliseSintatica {
     private void atribuicaoDeVariavel(){
         cmd.setVetor(vetorVar);
         cmd.setMatriz(matrizVar);
+        cmd.setIndice(indice);
+            cmd.setIndiceM(indiceM);
+            cmd.setTipoIndice(tipoIndice);
+            cmd.setTipoIndiceM(tipoIndiceM);
+            indice = "";
+            indiceM = "";
+            tipoIndice = "";
+            tipoIndiceM = "";
         vetorVar = false;
         vetorVar = false;
         cmd.setLinha(atual.getLinha());
@@ -432,6 +466,14 @@ public class AnaliseSintatica {
                 cmd2.setTipo("inc2");
                 cmd2.setVetor(vetorVar);
                 cmd2.setMatriz(matrizVar);
+                cmd2.setIndice(indice);
+                cmd2.setIndiceM(indiceM);
+                cmd2.setTipoIndice(tipoIndice);
+                cmd2.setTipoIndiceM(tipoIndiceM);
+                indice = "";
+                indiceM = "";
+                tipoIndice = "";
+                tipoIndiceM = "";
                 vetorVar = false;
                 matrizVar = false;
                 cmd.getParam().add(cmd2);
@@ -445,6 +487,14 @@ public class AnaliseSintatica {
                 cmd2.setTipo("id");
                 cmd2.setVetor(vetorVar);
                 cmd2.setMatriz(matrizVar);
+                cmd2.setIndice(indice);
+                cmd2.setIndiceM(indiceM);
+                cmd2.setTipoIndice(tipoIndice);
+                cmd2.setTipoIndiceM(tipoIndiceM);
+                indice = "";
+                indiceM = "";
+                tipoIndice = "";
+                tipoIndiceM = "";
                 vetorVar = false;
                 matrizVar = false;
                 cmd.getParam().add(cmd2);
@@ -459,6 +509,14 @@ public class AnaliseSintatica {
                 vetor();
                 cmd2.setVetor(vetorVar);
                 cmd2.setMatriz(matrizVar);
+                cmd2.setIndice(indice);
+                cmd2.setIndiceM(indiceM);
+                cmd2.setTipoIndice(tipoIndice);
+                cmd2.setTipoIndiceM(tipoIndiceM);
+                indice = "";
+                indiceM = "";
+                tipoIndice = "";
+                tipoIndiceM = "";
                 vetorVar = false;
                 matrizVar = false;
                 cmd.getParam().add(cmd2);
@@ -498,6 +556,14 @@ public class AnaliseSintatica {
                 vetor();
                 cmd2.setVetor(vetorVar);
                 cmd2.setMatriz(matrizVar);
+                cmd2.setIndice(indice);
+                cmd2.setIndiceM(indiceM);
+                cmd2.setTipoIndice(tipoIndice);
+                cmd2.setTipoIndiceM(tipoIndiceM);
+                indice = "";
+                indiceM = "";
+                tipoIndice = "";
+                tipoIndiceM = "";
                 vetorVar = false;
                 matrizVar = false;
                 cmd.getParam().add(cmd2);
@@ -604,6 +670,7 @@ public class AnaliseSintatica {
     
  
     private void se(){
+        cmd.setLinha(atual.getLinha());
         condSe();
         if (atual.getLexema().equals("entao")){
             atual = proximoToken();
@@ -622,6 +689,9 @@ public class AnaliseSintatica {
         }else{
             erro("Esta faltando o 'entao' para iniciar o bloco do se");
         }
+        cmd.setTipo("se");
+        cmd.setId("se");
+        metodo.getComandos().add(cmd);
     }
     
     private void senao(){
@@ -686,6 +756,7 @@ public class AnaliseSintatica {
     }
     
     private void cond(){
+        cmd.getConds().add(new Condicao());
         termo();
         tipoCond();
     }
@@ -698,6 +769,7 @@ public class AnaliseSintatica {
     
     private void tipoCond(){
         if (atual.getTipo() == Constants.OPERADOR_RELACIONAL){
+            cmd.getConds().get(cmd.getConds().size()-1).setOp(atual.getLexema());
             atual = proximoToken();
             termo();
         }
@@ -705,7 +777,7 @@ public class AnaliseSintatica {
     
     private void termo(){
         tipoTermo();
-        op();
+        //op();
     }
     
     private void op(){
@@ -719,6 +791,37 @@ public class AnaliseSintatica {
     private void tipoTermo(){
         if (atual.getTipo() == Constants.NUMERO || atual.getTipo() == Constants.CADEIA_CARACTERES
             || automatos.isTipoBoleano(atual.getLexema())){
+            
+            Condicao condicao = cmd.getConds().get(cmd.getConds().size()-1);
+            
+            if (!condicao.isAux()){
+                condicao.setTermoA(atual.getLexema());
+                if (atual.getTipo() == Constants.NUMERO){
+                    if (atual.getLexema().contains(".")){
+                        condicao.setTipoA("real");
+                    } else{
+                        condicao.setTipoA("inteiro");
+                    }
+                } else if (atual.getTipo() == Constants.CADEIA_CARACTERES){
+                    condicao.setTipoA("texto");
+                } else {
+                    condicao.setTipoA("boleano");
+                }
+                condicao.setAux(true);
+            } else {
+                condicao.setTermoB(atual.getLexema());
+                if (atual.getTipo() == Constants.NUMERO){
+                    if (atual.getLexema().contains(".")){
+                        condicao.setTipoB("real");
+                    } else{
+                        condicao.setTipoB("inteiro");
+                    }
+                } else if (atual.getTipo() == Constants.CADEIA_CARACTERES){
+                    condicao.setTipoB("texto");
+                } else {
+                    condicao.setTipoB("boleano");
+                }
+            }
             atual = proximoToken();
         }else{
             negar();
@@ -770,8 +873,8 @@ public class AnaliseSintatica {
     private void matriz(){
         if (atual.getLexema().equals("[")){
             atual = proximoToken();
-            opI2();
-            opIndice();
+            opI2(false);
+            //opIndice();
             if (atual.getLexema().equals("]")){
                 atual = proximoToken();
                 matrizVar = true;
@@ -784,8 +887,8 @@ public class AnaliseSintatica {
     private void vetor(){
         if (atual.getLexema().equals("[")){
             atual = proximoToken();
-            opI2();
-            opIndice();
+            opI2(true);
+            //opIndice();
             if (atual.getLexema().equals("]")){
                 atual = proximoToken();
                 vetorVar = true;
@@ -799,13 +902,38 @@ public class AnaliseSintatica {
     private void opIndice(){
         if (atual.getTipo() == Constants.OPERADOR_ARITMETICO){
             atual = proximoToken();
-            opI2();
+            opI2(false);
             opIndice();
         }
     }
     
-    private void opI2(){
+    private void opI2(boolean isVetor){
         if (atual.getTipo() == Constants.IDENTIFICADOR || atual.getTipo() == Constants.NUMERO){
+            if (isVetor){
+                if (atual.getTipo() == Constants.IDENTIFICADOR){
+                    indice = atual.getLexema();
+                    tipoIndice = "var";
+                }else{
+                    indice = atual.getLexema();
+                    if (indice.contains(".")){
+                        tipoIndice = "real";
+                    }else{
+                        tipoIndice = "inteiro";
+                    }
+                }
+            } else {
+                if (atual.getTipo() == Constants.IDENTIFICADOR){
+                    indiceM = atual.getLexema();
+                    tipoIndiceM = "var";
+                }else{
+                    indiceM = atual.getLexema();
+                    if (indiceM.contains(".")){
+                        tipoIndiceM = "real";
+                    }else{
+                        tipoIndiceM = "inteiro";
+                    }
+                }
+            }
             atual = proximoToken();
         }else{
             erro("Está faltando o indice do vetor");

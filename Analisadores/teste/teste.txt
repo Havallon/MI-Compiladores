@@ -1,10 +1,15 @@
 programa{
-	constantes{boleano a = verdadeiro;}
+	constantes{inteiro a = 2;}
 
-	metodo principal():vazio{}
-	metodo principala(boleano b):vazio{
-		variaveis{boleano j,x[2]; boleano y;}
-		j = !x[a];
+	metodo principal():vazio{
+		
+	}
+	metodo principala(inteiro b):vazio{
+		variaveis{inteiro j,x[2][2]; boleano y;}
+		se (3 > 2 && verdadeiro == falso || "2" == "b") entao{
+		}
+		j = x[2][2];
+		j = j;	
 	}
 	
 	metodo soma(inteiro m):real{
