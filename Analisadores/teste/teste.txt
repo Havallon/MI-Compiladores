@@ -6,7 +6,7 @@ programa{
 	}
 	metodo soma(texto m):inteiro{
 		variaveis{inteiro k;}
-		resultado k + k*2;
+		resultado x + k*2/s;
 	}
 	metodo t():texto{resultado "a";}	
 }
