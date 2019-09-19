@@ -232,7 +232,14 @@ public class AnaliseSintatica {
     }
     
     private void resultado(){
+        cmd.setId("resultado");
+        cmd.setTipo("resultado");
+        cmd.setLinha(atual.getLinha());
         if (atual.getLexema().equals(";")){
+            Comando cmd2 = new Comando();
+            cmd2.setId("vazio");
+            cmd2.setTipo("vazio");
+            cmd.getParam().add(cmd2);
             atual = proximoToken();
         }else{
             verificaCaso();
@@ -470,15 +477,30 @@ public class AnaliseSintatica {
                 cmd2.setIndiceM(indiceM);
                 cmd2.setTipoIndice(tipoIndice);
                 cmd2.setTipoIndiceM(tipoIndiceM);
+                cmd.getParam().add(cmd2);
                 indice = "";
                 indiceM = "";
                 tipoIndice = "";
                 tipoIndiceM = "";
                 vetorVar = false;
                 matrizVar = false;
-                cmd.getParam().add(cmd2);
                 atual = proximoToken();
             }else if (atual.getTipo() == Constants.OPERADOR_ARITMETICO){
+                cmd2.setId(auxiliar);
+                cmd2.setTipo("id");
+                cmd2.setVetor(vetorVar);
+                cmd2.setMatriz(matrizVar);
+                cmd2.setIndice(indice);
+                cmd2.setIndiceM(indiceM);
+                cmd2.setTipoIndice(tipoIndice);
+                cmd2.setTipoIndiceM(tipoIndiceM);
+                cmd.getParam().add(cmd2);
+                indice = "";
+                indiceM = "";
+                tipoIndice = "";
+                tipoIndiceM = "";
+                vetorVar = false;
+                matrizVar = false;
                 colocarToken(atual);
                 atual = colocarToken();
                 expressao();
@@ -637,8 +659,26 @@ public class AnaliseSintatica {
                 cmd2.setId(aux);
                 cmd2.setTipo("chamada");
                 cmd.getParam().add(cmd2);
-            }else
+            }else{
                 vetor();
+                Comando cmd2 = new Comando();
+                cmd2.setId(aux);
+                cmd2.setTipo("id");
+                cmd2.setVetor(vetorVar);
+                cmd2.setMatriz(matrizVar);
+                cmd2.setIndice(indice);
+                cmd2.setIndiceM(indiceM);
+                cmd2.setTipoIndice(tipoIndice);
+                cmd2.setTipoIndiceM(tipoIndiceM);
+                indice = "";
+                indiceM = "";
+                tipoIndice = "";
+                tipoIndiceM = "";
+                vetorVar = false;
+                matrizVar = false;
+                cmd.getParam().add(cmd2);
+                
+            }
         } else if (atual.getTipo() == Constants.NUMERO || atual.getTipo() == Constants.CADEIA_CARACTERES){
             Comando cmd2 = new Comando();
             cmd2.setId(atual.getLexema());

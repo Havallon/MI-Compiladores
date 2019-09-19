@@ -478,6 +478,294 @@ public class AnaliseSemantica {
                             }
                         }
                     }
+                } else if (cmd.getTipo().equals("resultado")){
+                    if (cmd.getParam().size() == 1){
+                        Comando aux = cmd.getParam().get(0);
+                        if (aux.getTipo().equals("id")){
+                            boolean e = false;
+                            for (Constante c : ctes){
+                                if (c.getNome().equals(aux.getId())){
+                                    e = true;
+                                    if (!c.getTipo().equals(m.getRetorno())){
+                                        erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Retorno do método '" + m.getNome() + "' tem que ser do tipo '"+m.getRetorno()+"'"));
+                                    }
+                                }
+                            }
+                            if (!e){
+                                for (Variavel v : m.getParametros()){
+                                    if (v.getNome().equals(aux.getId())){
+                                        e = true;
+                                        if (!v.getTipo().equals(m.getRetorno())){
+                                            erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Retorno do método '" + m.getNome() + "' tem que ser do tipo '"+m.getRetorno()+"'"));
+                                        }
+                                    }
+                                }
+                                if (!e){
+                                    for (Variavel v : m.getVariaveis()){
+                                        if (v.getNome().equals(aux.getId())){
+                                            e = true;
+                                            aux.setLinha(cmd.getLinha());
+                                            verificarVetores(v.isVetor(), v.isMatriz(), aux, ctes, m);
+                                            if (!v.getTipo().equals(m.getRetorno())){
+                                                erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Retorno do método '" + m.getNome() + "' tem que ser do tipo '"+m.getRetorno()+"'"));
+                                            }
+                                        }
+                                    }
+                                    if (!e){
+                                        erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Variavel '" + aux.getId() + "' nao existe"));
+                                    }
+                                }
+                            }
+                        }else if (aux.getTipo().equals("inc") || aux.getTipo().equals("inc2")){
+                            String nome = aux.getId();
+                            String tipo = "";
+                            
+                            boolean e = false;
+                            
+                            for (Constante c : ctes){
+                                if (c.getNome().equals(nome)){
+                                    e = true;
+                                    erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Nao é permitido incremento em constantes"));
+                                }
+                            }
+                            if (!e){
+                                for (Variavel v : m.getParametros()){
+                                    if (v.getNome().equals(nome)){
+                                        e = true;
+                                        tipo = v.getTipo();
+                                        if (tipo.equals("texto") || tipo.equals("boleano")){
+                                            erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Nao é permitido incremento em variavel do tipo '"+ tipo + "'"));
+                                        }else{
+                                            if (!tipo.equals(m.getRetorno())){
+                                                erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Retorno do método '" + m.getNome() + "' tem que ser do tipo '"+m.getRetorno()+"'"));
+                                            }
+                                        }
+                                    }
+                                }
+                                if (!e){
+                                    for (Variavel v : m.getVariaveis()){
+                                        if (v.getNome().equals(nome)){
+                                            e = true;
+                                            aux.setLinha(cmd.getLinha());
+                                            tipo = v.getTipo();
+                                            verificarVetores(v.isVetor(), v.isMatriz(), aux, ctes, m);
+                                            if (tipo.equals("texto") || tipo.equals("boleano")){
+                                                erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Nao é permitido incremento em variavel do tipo '"+ tipo + "'"));
+                                            }else{
+                                                if (!tipo.equals(m.getRetorno())){
+                                                    erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Retorno do método '" + m.getNome() + "' tem que ser do tipo '"+m.getRetorno()+"'"));
+                                                }
+                                            }
+                                        }
+                                    }
+                                    if (!e){
+                                        erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - A variavel '" + nome + "' nao existe"));
+                                    }
+                                }
+                            }
+                            
+                        }else{
+                            if (!m.getRetorno().equals(aux.getTipo())){
+                                erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Retorno do método '" + m.getNome() + "' tem que ser do tipo '"+m.getRetorno()+"'"));
+                            }
+                        }
+                    } else {
+                        if (m.getRetorno().equals("vazio")){
+                            erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Retorno do método '" + m.getNome() + "' tem que ser do tipo '"+m.getRetorno()+"'"));
+                        }else {
+                            String tipo = m.getRetorno();
+                            for (Comando c : cmd.getParam()){
+                                if (!c.getTipo().equals(tipo)){
+                                    if (c.getTipo().equals("id")){
+                                        boolean e = false;
+                                        for (Constante c2 : ctes){
+                                            if (c2.getNome().equals(c.getId())){
+                                                e = true;
+                                                if (!c2.getTipo().equals(tipo)){
+                                                    erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - A variavel '" + c2.getNome() + "' não é do tipo '" + tipo + "'"));
+                                                }
+                                            } 
+                                        }
+                                        if (!e){
+                                            for (Variavel v2 : m.getParametros()){
+                                                if (v2.getNome().equals(c.getId())){
+                                                    e = true;
+                                                    if (!v2.getTipo().equals(tipo)){
+                                                        erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - A variavel '" + v2.getNome() + "' não é do tipo '" + tipo + "'"));
+                                                    }
+                                                }
+                                            }
+
+                                            if (!e){
+                                                for (Variavel v2 : m.getVariaveis()){
+                                                    if (v2.getNome().equals(c.getId())){
+                                                        e = true;
+                                                        c.setLinha(cmd.getLinha());
+                                                        verificarVetores(v2.isVetor(), v2.isMatriz(), c,ctes,m);
+                                                        if (!v2.getTipo().equals(tipo)){
+                                                            erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - A variavel '" + v2.getNome() + "' não é do tipo '" + tipo + "'"));
+                                                        }
+                                                    }
+                                                }
+                                                if (!e){
+                                                    erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Variavel '" + c.getId() + "' nao existe"));
+                                                }
+                                            }
+                                        }
+                                    }else if (c.getTipo().equals("chamada")){
+                                        Metodo auxiliar = null;
+                                        boolean tipoM = false;
+                                        boolean ret = false;
+                                        for (Metodo metodo : lista){
+                                            if (metodo.getNome().equals(c.getId())){
+                                                if (metodo.getRetorno().equals(tipo)){
+                                                    if (metodo.getParametros().size() == c.getParam().size()){
+                                                        auxiliar = metodo;
+                                                        for (int j = 0; j < metodo.getParametros().size(); j++){
+                                                            if (c.getParam().get(j).getTipo().equals("imediato")){
+                                                                switch (metodo.getParametros().get(j).getTipo()) {
+                                                                    case "inteiro":
+                                                                        try {
+                                                                            int i = Integer.parseInt(c.getParam().get(j).getId());
+                                                                        } catch (Exception ex) {
+                                                                            erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Valor '" + c.getParam().get(j).getId() + "' não é do tipo " + metodo.getParametros().get(j).getTipo()));
+                                                                        }
+                                                                        break;
+                                                                    case "real":
+                                                                        try {
+                                                                            float i = Float.parseFloat(c.getParam().get(j).getId());
+                                                                        } catch (Exception ex) {
+                                                                            erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Valor '" + c.getParam().get(j).getId() + "' não é do tipo " + metodo.getParametros().get(j).getTipo()));
+                                                                        }
+                                                                        break;
+                                                                    case "boleano":
+                                                                        if (!automatos.isTipoBoleano(c.getParam().get(j).getId())) {
+                                                                            erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Valor '" + c.getParam().get(j).getId() + "' não é do tipo " + metodo.getParametros().get(j).getTipo()));
+                                                                        }
+                                                                        break;
+                                                                    case "texto":
+                                                                        if (!c.getParam().get(j).getId().matches("\"(.)*\"")) {
+                                                                            erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Valor '" + c.getParam().get(j).getId() + "' não é do tipo " + metodo.getParametros().get(j).getTipo()));
+                                                                        }
+                                                                        break;
+                                                                }
+                                                            } else if (c.getParam().get(j).getTipo().equals("var")){
+                                                                boolean aux = false;
+                                                                for (Constante c2 : ctes){
+                                                                    if (c2.getNome().equals(c.getParam().get(j).getId())){
+                                                                        aux = true;
+                                                                        if (!c2.getTipo().equals(metodo.getParametros().get(j).getTipo())){
+                                                                            erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Constante '" + c2.getNome() + "' não é do tipo " + metodo.getParametros().get(j).getTipo()));
+                                                                        }
+                                                                    }
+                                                                }
+                                                                if (!aux){
+                                                                    for (Variavel v : m.getParametros()){
+                                                                        if (v.getNome().equals(c.getParam().get(j).getId())){
+                                                                            aux = true;
+                                                                            c.getParam().get(j).setLinha(cmd.getLinha());
+                                                                            verificarVetores(v.isVetor(),v.isMatriz(),c.getParam().get(j),ctes,m);
+                                                                            if (!v.getTipo().equals(metodo.getParametros().get(j).getTipo())){
+                                                                                erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Variavel '" + v.getNome() + "' não é do tipo " + metodo.getParametros().get(j).getTipo()));
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                    if (!aux){
+                                                                        for (Variavel v : m.getVariaveis()){
+                                                                            if (v.getNome().equals(c.getParam().get(j).getId())){
+                                                                                aux = true;
+                                                                                c.getParam().get(j).setLinha(cmd.getLinha());
+                                                                                verificarVetores(v.isVetor(),v.isMatriz(),c.getParam().get(j),ctes, m);
+                                                                                if (!v.getTipo().equals(metodo.getParametros().get(j).getTipo())){
+                                                                                    erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Variavel '" + v.getNome() + "' não é do tipo " + metodo.getParametros().get(j).getTipo()));
+                                                                                }
+                                                                            }
+                                                                        }
+
+                                                                        if (!aux){
+                                                                            erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Variavel '" + c.getParam().get(j).getId() + "' nao existe"));
+                                                                        }
+                                                                    }
+                                                                }
+                                                            } else if (c.getParam().get(j).getTipo().equals("met")){
+                                                                System.out.println("ok");
+                                                            }
+                                                        }
+
+                                                    }
+                                                    else {
+                                                        ret = true;
+                                                    }
+                                                } else{
+                                                    tipoM = true;
+                                                }
+                                            }
+                                        }
+
+                                        if (auxiliar != null){
+                                        }else{
+                                            if (tipoM){
+                                                erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Retorno do  método '" + c.getId() + "' nao é do tipo '" + tipo+"'"));
+                                            }else if(ret){
+                                                erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Método '" + c.getId() + "' nao existe"));
+                                            }else{ 
+                                                erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Método '" + c.getId() + "' nao existe"));
+                                            }
+                                        }
+
+                                    }else if (c.getTipo().equals("negar")){
+                                        if (tipo.equals("boleano")){
+                                            boolean aux = false;
+                                            for (Constante c2 : ctes){
+                                                if (c2.getNome().equals(c.getId())){
+                                                    aux = true;
+                                                    if (!c2.getTipo().equals("boleano")){
+                                                        erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - A constante '" + c2.getNome() + "' nao é do tipo boleano"));
+                                                    }
+                                                }
+                                            }
+                                            if (!aux){
+                                                for (Variavel v : m.getParametros()){
+                                                    if (v.getNome().equals(c.getId())){
+                                                        aux = true;
+                                                        if (!v.getTipo().equals("boleano")){
+                                                            erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - A variavel '" + v.getNome() + "' nao é do tipo boleano"));
+                                                        }
+                                                    }
+                                                }
+                                                if (!aux){
+                                                    for (Variavel v : m.getVariaveis()){
+                                                        if (v.getNome().equals(c.getId())){
+                                                            aux = true;
+                                                            c.setLinha(cmd.getLinha());
+                                                            verificarVetores(v.isVetor(), v.isMatriz(), c, ctes,m);
+                                                            if (!v.getTipo().equals("boleano")){
+                                                                erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - A variavel '" + v.getNome() + "' nao é do tipo boleano"));
+                                                            }
+                                                        }
+                                                    }
+                                                    if (!aux){
+                                                        erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Variavel '" + c.getId() + "' nao existe"));
+                                                    }
+                                                }
+                                            }
+                                        } else{
+                                            erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - A variavel '" + cmd.getId() + "' nao é do tipo boleano"));
+                                        }
+                                    }else{
+                                        erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - Só pode haver operando do tipo '" + tipo + "' nessa expressao"));
+                                    }
+                                }
+                            }
+                            if (tipo.equals("texto")){
+                                for (String s : cmd.getOp()){
+                                    if (!s.equals("+")){
+                                        erros.add(new ErroSemantico(cmd.getLinha(), "Linha: " + cmd.getLinha() + " - A unica operação com textos permita é a adição"));
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

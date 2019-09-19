@@ -1,18 +1,12 @@
 programa{
-	constantes{inteiro a = 2;}
+	constantes{real a = 2;}
 
 	metodo principal():vazio{
 		
 	}
-	metodo principala(inteiro b):vazio{
-		variaveis{inteiro j,x[2][2]; boleano y;}
-		se (3 > 2 && verdadeiro == falso || "2" == "b") entao{
-		}
-		j = x[2][2];
-		j = j;	
+	metodo soma(texto m):inteiro{
+		variaveis{inteiro k;}
+		resultado k + k*2;
 	}
-	
-	metodo soma(inteiro m):real{
-		resultado;
-	}	
+	metodo t():texto{resultado "a";}	
 }
